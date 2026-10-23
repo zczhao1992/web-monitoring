@@ -1,0 +1,360 @@
+{
+  "Metadata": {
+    "title": "Frontend Monitoring — Production logs in under a minute",
+    "description": "Production-ready logs in under a minute."
+  },
+  "Header": {
+    "nav": {
+      "whyUs": "Why us?",
+      "features": "Features",
+      "integrations": "Integrations",
+      "pricing": "Pricing",
+      "docs": "Docs"
+    },
+    "userMenu": {
+      "dashboard": "Dashboard",
+      "billing": "Billing",
+      "settings": "Settings",
+      "support": "Support",
+      "logOut": "Log Out"
+    },
+    "logIn": "Log in",
+    "getStarted": "Get Started"
+  },
+  "LocaleSwitcher": {
+    "label": "Switch language",
+    "zh": "中文",
+    "en": "English"
+  },
+  "Hero": {
+    "badge": "v1.0.2 is now live",
+    "titleLine1": "Logs ready in",
+    "titleHighlight": "under a minute.",
+    "subtitle": "A simple, fast logging platform built for developers who want clarity without complexity. Start tracking errors, requests, and performance instantly.",
+    "getStarted": "Get Started",
+    "viewPricing": "View Pricing",
+    "bullets": {
+      "free": "Free for side projects",
+      "noCard": "No credit card required"
+    },
+    "panel": {
+      "liveProduction": "Live Production",
+      "metrics": {
+        "errors": "Errors",
+        "requests": "Requests",
+        "avgLatency": "Avg Latency",
+        "allClear": "All clear",
+        "streamingIn": "Streaming in",
+        "feelsFast": "Feels fast",
+        "watchLatency": "Watch latency"
+      },
+      "liveStream": "Live Stream",
+      "hint": "Paste one snippet, watch logs appear."
+    },
+    "logs": {
+      "signedIn": "User signed in with GitHub",
+      "cacheHit": "Cache hit for profile_data",
+      "dashboardRendered": "Dashboard rendered (42ms)",
+      "rateLimit": "Rate limit approaching for IP 192.168.x.x",
+      "webhookReceived": "Payment webhook received",
+      "syncFailed": "Failed to sync with external provider"
+    }
+  },
+  "TrustedBy": {
+    "metrics": {
+      "ingest": {
+        "title": "2M+ logs/min ingest capacity",
+        "description": "Built to keep up with busy apps."
+      },
+      "search": {
+        "title": "<50ms average search time",
+        "description": "Find what you need instantly."
+      },
+      "start": {
+        "title": "Start logging in under 60 seconds",
+        "description": "From install to first log, fast."
+      },
+      "config": {
+        "title": "Zero config needed",
+        "description": "No YAML, no servers, no tuning."
+      }
+    },
+    "trustedBy": "Loved by developers from the world’s leading organizations"
+  },
+  "Features": {
+    "story": {
+      "eyebrow": "Why Frontend Monitoring exists",
+      "title": "Logging shouldn’t feel like a whole other job.",
+      "paragraph1": "Most devs don’t have time to babysit a logging stack. ELK, random dashboards, YAML jungles — all just to answer one question: <strong>What went wrong?</strong>",
+      "paragraph2": "If you’re shipping fast — junior, indie, side-project, or a small team — you don’t want to spend days wiring logs. You just want errors, requests, and latency in one place, instantly.",
+      "paragraph3": "Frontend Monitoring removes all the overhead.",
+      "paragraph4": "Drop in a small SDK, deploy, and your logs start streaming in under a minute. No servers. No cluster tuning. No 40-page docs before anything works.",
+      "paragraph5": "It’s logging that just works, instead of becoming another system you have to maintain."
+    },
+    "section": {
+      "title": "Everything you need. Nothing you don’t.",
+      "subtitle": "Simple tools that help you see what your app is doing, without learning a new system."
+    },
+    "cards": {
+      "capture": {
+        "title": "Capture & Store Instantly",
+        "description": "Send JSON logs from your app, API, or background jobs without schemas or migrations. We index everything automatically so you can focus on shipping."
+      },
+      "search": {
+        "title": "Search & Debug Live",
+        "description": "Find bugs in seconds with simple filters like <code>status:500</code>. Watch events stream in real-time with Live Tail to see exactly what’s happening."
+      },
+      "stream": {
+        "title": "Live Log Stream",
+        "description": "Get a live stream of your log data directly in your application. Build your own custom dashboard views without needing to visit our website to check your logs."
+      },
+      "alerts": {
+        "title": "Smart Alerts & Webhooks",
+        "description": "Never miss a critical error. Set up alerts for specific events and receive instant notifications via webhooks. Track application crashes before they happen."
+      }
+    }
+  },
+  "Setup": {
+    "title": "Set up in under a minute.",
+    "subtitle": "You don’t need to learn a new system. Just drop in the SDK and start seeing logs immediately.",
+    "steps": {
+      "install": {
+        "title": "Install the package",
+        "description": "Add the SDK to your app with your favorite package manager."
+      },
+      "init": {
+        "title": "Initialize the logger",
+        "description": "Configure the logger with your API key."
+      },
+      "send": {
+        "title": "Send logs",
+        "description": "Log events from anywhere in your app."
+      },
+      "done": {
+        "title": "Done",
+        "description": "That’s it. No config, no servers, no YAML. Just clear logs."
+      }
+    }
+  },
+  "Testimonials": {
+    "title": "Developers who ship fast love Frontend Monitoring.",
+    "items": {
+      "sarah": "Setup was insanely fast. I dropped in the SDK and had real logs showing up before my coffee got cold.",
+      "mike": "Frontend Monitoring saved me hours of debugging on launch day. I finally understood what my API was doing.",
+      "david": "I didn’t need to learn a new tool. The UI feels familiar, and the defaults just make sense.",
+      "alex": "The live tail feature is a game changer. Watching logs stream in real-time makes debugging so much easier.",
+      "emily": "Finally, a logging tool that doesn’t require a PhD to configure. It just works.",
+      "james": "The search speed is incredible. I can find exactly what I’m looking for in milliseconds.",
+      "lisa": "Pricing is super transparent. No hidden fees or surprise bills at the end of the month.",
+      "tom": "We switched from ELK and haven’t looked back. The simplicity is refreshing."
+    }
+  },
+  "WhySwitch": {
+    "title": "Why developers switch to Frontend Monitoring.",
+    "subtitle": "See at a glance how life looks before and after you plug in Frontend Monitoring.",
+    "without": {
+      "title": "Without Frontend Monitoring",
+      "dashboards": "Too many dashboards to keep in sync.",
+      "hardSetup": "Hard to set up and easy to break.",
+      "slowSearch": "Slow searches when you’re under pressure.",
+      "yaml": "YAML everywhere and confusing config files.",
+      "cost": "Pay for storage and infra you barely use."
+    },
+    "with": {
+      "title": "With Frontend Monitoring",
+      "setup": "Set up in under a minute with a tiny SDK.",
+      "search": "Instant search that feels as fast as your editor.",
+      "simple": "No complicated setup, store logs with just few lines of code.",
+      "pricing": "Simple pricing that grows with your app, not your stress.",
+      "dashboard": "Get your log access in your dashboard with our SDK.",
+      "alerts": "Get webhook alerts for critical events."
+    }
+  },
+  "Pricing": {
+    "title": "Simple, predictable pricing.",
+    "subtitle": "Start for free. Upgrade when you grow—no surprises.",
+    "perMonth": "/mo",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Good for side projects and experiments.",
+        "features": {
+          "logs": "10k logs/month",
+          "retention": "7-day retention",
+          "search": "Advanced search",
+          "support": "Email support",
+          "webhooks": "Webhook alerts",
+          "api": "API ACCESS"
+        },
+        "cta": "Start Free"
+      },
+      "starter": {
+        "name": "Starter",
+        "badge": "Popular",
+        "description": "Affordable logging for small SaaS teams.",
+        "features": {
+          "logs": "100k logs/month",
+          "retention": "30-day retention",
+          "search": "Advanced search",
+          "support": "Priority support",
+          "webhooks": "Webhook alerts",
+          "api": "API ACCESS"
+        },
+        "cta": "Get Started"
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "For growing teams that ship every week.",
+        "features": {
+          "logs": "1M logs/month",
+          "retention": "90-day retention",
+          "alerts": "Real-time alerts",
+          "webhooks": "Webhook alerts",
+          "support": "24/7 support",
+          "api": "API ACCESS"
+        },
+        "cta": "Choose Pro"
+      }
+    }
+  },
+  "CTA": {
+    "title": "Focus on your product.",
+    "titleLine2": "We’ll handle your logs.",
+    "subtitle": "Set up in under a minute. No learning curve. No maintenance.",
+    "getStarted": "Get Started",
+    "viewDocs": "View Docs"
+  },
+  "Footer": {
+    "links": {
+      "docs": "Docs",
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "status": "Status"
+    },
+    "operational": "All systems are operational now",
+    "live": "Live",
+    "copyright": "© {year} Frontend Monitoring Inc.",
+    "builtWith": "Built with <heart>❤️</heart> for developers",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "Privacy": {
+    "title": "Privacy Policy",
+    "subtitle": "How Frontend Monitoring collects, uses, shares, and protects your information.",
+    "applies": "Applies to the website, dashboard, SDKs, and APIs.",
+    "sections": {
+      "overview": {
+        "title": "Overview & Scope",
+        "body": "This policy covers personal information we process when you use Frontend Monitoring, including our site, dashboard, SDKs, and APIs. “Personal information” means any data that identifies or could reasonably be linked to an individual."
+      },
+      "collect": {
+        "title": "Information We Collect",
+        "item1": "Account data: name, email, authentication profile, plan and billing metadata.",
+        "item2": "Product usage: requests, performance metrics, device/browser, timestamps, region.",
+        "item3": "Logs you send: messages, context fields, and metadata via SDKs/APIs.",
+        "item4": "Cookies/identifiers: session tokens, preferences, and analytics signals."
+      },
+      "usage": {
+        "title": "How We Use Data",
+        "item1": "Operate, maintain, and improve the logging platform.",
+        "item2": "Authenticate sessions, secure the service, and prevent abuse.",
+        "item3": "Provide support, resolve issues, and communicate product updates.",
+        "item4": "Produce aggregated, anonymized analytics to guide product decisions."
+      },
+      "rights": {
+        "title": "Legal Bases & Your Rights",
+        "body": "Where applicable (e.g., GDPR/CCPA), we rely on legitimate interests, contract performance, and consent for processing. You may have rights to access, correct, delete, port, or restrict processing of your personal data. We honor opt-out requests for marketing communications and support regional privacy requirements."
+      },
+      "cookies": {
+        "title": "Cookies & Tracking",
+        "body": "We use cookies and similar technologies for session authentication, preferences, and usage analytics. You can manage cookies in your browser settings; blocking some cookies may affect product functionality."
+      },
+      "retention": {
+        "title": "Data Retention",
+        "body": "Retention depends on your plan (e.g., shorter on free tiers, longer on paid tiers). You can delete logs or request account deletion through the dashboard or API at any time."
+      },
+      "security": {
+        "title": "Security",
+        "body": "We protect data in transit and at rest using industry-standard controls. Access to systems is restricted and audited. No method is 100% secure—please keep your API keys confidential and rotate them regularly."
+      },
+      "sharing": {
+        "title": "Sharing & Transfers",
+        "body": "We do not sell personal information. We may share limited data with trusted providers (hosting, email, analytics) solely to deliver the service, subject to agreements and safeguards. Data may be processed in regions outside your locale with appropriate protections."
+      },
+      "transfers": {
+        "title": "International Transfers",
+        "body": "When transferring data across borders, we implement measures consistent with applicable laws, including contractual protections and technical safeguards."
+      },
+      "children": {
+        "title": "Children’s Privacy",
+        "body": "Our service is not directed to children under 13, and we do not knowingly collect their personal data. If you believe a child has provided data to us, contact support and we will promptly address it."
+      },
+      "law": {
+        "title": "Governing Law",
+        "body": "This Privacy Policy is governed by the laws of the United States of America. Where relevant, applicable state laws may also apply."
+      },
+      "choices": {
+        "title": "Your Choices & Contact",
+        "item1": "Access, update, export, or delete your account data from the dashboard.",
+        "item2": "Delete or export logs via API where supported by your plan.",
+        "item3": "For privacy inquiries, use the support channels listed in your dashboard."
+      },
+      "changes": {
+        "title": "Changes to This Policy",
+        "body": "We may update this policy as the product evolves. If material changes occur, we will notify you within the product or on our site. Continued use indicates acceptance of the updated policy."
+      }
+    }
+  },
+  "Terms": {
+    "title": "Terms of Service",
+    "subtitle": "These terms govern your use of Frontend Monitoring. Please read them carefully.",
+    "sections": {
+      "acceptance": {
+        "title": "Acceptance of Terms",
+        "body": "By creating an account or using the service, you agree to these Terms and our Privacy Policy."
+      },
+      "accounts": {
+        "title": "Accounts & Security",
+        "item1": "You are responsible for safeguarding your credentials and API keys.",
+        "item2": "Notify us immediately of any unauthorized access or suspected breach.",
+        "item3": "You must provide accurate information and keep it up to date."
+      },
+      "use": {
+        "title": "Use of Service",
+        "item1": "Do not use the platform for unlawful content or activities.",
+        "item2": "Do not attempt to disrupt, degrade, or bypass rate limits or security.",
+        "item3": "Respect fair use constraints; excessive or abusive traffic may be limited."
+      },
+      "billing": {
+        "title": "Plans, Billing & Taxes",
+        "item1": "Fees, quotas, and retention vary by plan, as shown on the pricing page.",
+        "item2": "Paid plans are billed in advance unless stated otherwise.",
+        "item3": "You are responsible for applicable taxes and payment method charges."
+      },
+      "ownership": {
+        "title": "Data & Intellectual Property",
+        "item1": "You own your log data. Grant us the rights needed to store and process it.",
+        "item2": "All service software, branding, and documentation are owned by us.",
+        "item3": "Feedback may be used to improve the product without obligation."
+      },
+      "termination": {
+        "title": "Termination",
+        "body": "You may stop using the service or delete your account at any time. We may suspend or terminate access for violations, abuse, or risks to the platform or users."
+      },
+      "warranties": {
+        "title": "Warranties & Liability",
+        "item1": "The service is provided “as is” without warranties of any kind.",
+        "item2": "To the extent permitted by law, our liability is limited to fees paid for the current term.",
+        "item3": "We are not liable for indirect, incidental, or consequential damages."
+      },
+      "law": {
+        "title": "Governing Law & Jurisdiction",
+        "body": "These Terms and your use of Frontend Monitoring are governed by the laws of the United States of America. Where relevant, applicable state laws may also apply. You agree that any dispute arising out of or relating to the service will be resolved in competent courts within the United States, and you consent to personal jurisdiction and venue in those courts."
+      },
+      "changes": {
+        "title": "Changes & Contact",
+        "body": "We may update these terms to reflect changes to the service. Continued use after updates indicates acceptance. For questions, contact support through the dashboard channels."
+      }
+    }
+  }
+}
