@@ -14,7 +14,7 @@ export const DRIZZLE_DB = 'DRIZZLE_DB';
         const connectionString = process.env.DATABASE_URL;
 
         if (!connectionString) {
-          throw new Error('DATABASE_URL没找到');
+          throw new Error('DATABASE_URL未设置');
         }
         const pool = new Pool({ connectionString });
 
