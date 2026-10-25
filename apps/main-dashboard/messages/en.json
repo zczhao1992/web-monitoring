@@ -1,0 +1,412 @@
+{
+  "Metadata": {
+    "title": "PulseFront",
+    "description": "Production-ready logs in under a minute."
+  },
+  "Common": {
+    "brand": "PulseFront",
+    "live": "Live",
+    "noData": "Enough data not available yet!",
+    "loading": "Loading…",
+    "cancel": "Cancel",
+    "save": "Save",
+    "select": "Select",
+    "localeSwitcher": {
+      "label": "Switch language",
+      "zh": "中文",
+      "en": "English"
+    }
+  },
+  "Nav": {
+    "section": "Main",
+    "devConsole": "Developer Console",
+    "plan": {
+      "free": "Free",
+      "starter": "Starter",
+      "pro": "Pro"
+    },
+    "items": {
+      "overview": "Overview",
+      "liveLogs": "Live Logs",
+      "queries": "Queries",
+      "alerts": "Alerts",
+      "integrations": "Integrations",
+      "apiKeys": "API Keys",
+      "settings": "Settings"
+    }
+  },
+  "TopBar": {
+    "searchPlaceholder": "Search logs or queries..."
+  },
+  "Levels": {
+    "all": "All",
+    "info": "Info",
+    "warning": "Warning",
+    "error": "Error",
+    "debug": "Debug",
+    "success": "Success",
+    "audit": "Audit",
+    "metric": "Metric"
+  },
+  "Overview": {
+    "title": "Overview",
+    "description": "High-level metrics and activity across your logs and alerts.",
+    "metrics": {
+      "logs24h": "Logs (24h)",
+      "errorRate": "Error Rate",
+      "ingestRate": "Ingest Rate",
+      "activeAlerts": "Active Alerts",
+      "avgLatency": "Avg Latency",
+      "queueBacklog": "Queue Backlog",
+      "jobs": "{count} jobs"
+    },
+    "charts": {
+      "logsOverTime": "Logs Over Time (12h)",
+      "errorTrend": "Error Trend (12h)",
+      "topSources": "Top Sources (24h)"
+    },
+    "topActivity": "Top Activity (24h)",
+    "table": {
+      "time": "Time",
+      "source": "Source",
+      "action": "Action",
+      "status": "Status"
+    },
+    "status": {
+      "ok": "OK",
+      "warn": "Warn",
+      "error": "Error"
+    },
+    "systemHealth": "System Health",
+    "recentAlerts": "Recent Alerts",
+    "services": {
+      "ingest": "Ingest Service",
+      "alerting": "Alerting Service",
+      "database": "Database",
+      "publicApi": "Public API"
+    },
+    "healthStatus": {
+      "healthy": "Healthy",
+      "degraded": "Degraded",
+      "down": "Down"
+    }
+  },
+  "LiveLogs": {
+    "title": "Log Tail",
+    "description": "Watch new log lines arrive every second.",
+    "category": "Category",
+    "categoryPlaceholder": "Select category",
+    "search": "Search",
+    "searchPlaceholder": "Search logs (e.g. message: timeout)",
+    "liveTail": "Live tail • {count} entries",
+    "updatesEverySecond": "Updates every second",
+    "empty": "No matching logs in the static tail.",
+    "details": "Log Details",
+    "copyJson": "Copy JSON",
+    "formatted": "Formatted",
+    "rawJson": "Raw JSON",
+    "timestamp": "Timestamp",
+    "level": "Level",
+    "source": "Source",
+    "message": "Message",
+    "payload": "Payload",
+    "logsLoaded": "Logs Loaded",
+    "errors": "Errors",
+    "warnings": "Warnings"
+  },
+  "Queries": {
+    "title": "Queries",
+    "description": "Search, filter, and analyze logs stored in your project.",
+    "placeholder": "Enter query (e.g. type:error AND appName:billing)",
+    "run": "Run Query",
+    "clear": "Clear",
+    "examples": "Examples:",
+    "results": "Query Results",
+    "rows": "{count} rows",
+    "loadFailed": "Failed to load logs: {error}",
+    "empty": "No logs found. Try adjusting your query.",
+    "table": {
+      "timestamp": "Timestamp",
+      "type": "Type",
+      "app": "App",
+      "message": "Message",
+      "environment": "Environment"
+    },
+    "details": "Log Details",
+    "copyJson": "Copy JSON",
+    "formatted": "Formatted",
+    "rawJson": "Raw JSON",
+    "app": "App",
+    "environment": "Environment",
+    "footer": {
+      "results": "Results",
+      "errors": "Errors",
+      "warnings": "Warnings",
+      "loading": "Loading…"
+    }
+  },
+  "Alerts": {
+    "title": "Alerts",
+    "description": "Monitor and manage active log-based alerts.",
+    "newAlert": "New Alert",
+    "comingSoon": "Alert creation coming soon from v2",
+    "emptyTitle": "No alerts configured",
+    "emptyDescription": "You haven't created any alerts yet. Set up alerts to get notified about critical events in your system.",
+    "table": {
+      "name": "Name",
+      "condition": "Condition",
+      "status": "Status",
+      "severity": "Severity",
+      "lastTriggered": "Last Triggered"
+    },
+    "status": {
+      "active": "Active",
+      "resolved": "Resolved"
+    },
+    "severity": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "dialog": {
+      "title": "Create New Alert",
+      "description": "Configure a new alert. It will be triggered when the condition matches.",
+      "name": "Alert Name",
+      "namePlaceholder": "Enter alert name",
+      "condition": "Condition",
+      "conditionPlaceholder": "e.g. error_rate > 5%",
+      "severity": "Severity",
+      "channel": "Notification Channel",
+      "threshold": "Threshold Period",
+      "save": "Save Alert",
+      "minutes": "{count}m",
+      "hour": "1h"
+    },
+    "footer": {
+      "active": "Active",
+      "muted": "Muted",
+      "resolved": "Resolved"
+    }
+  },
+  "Integrations": {
+    "title": "Integrations",
+    "description": "Connect PulseFront to your favorite frameworks",
+    "comingSoon": "Coming soon",
+    "frameworks": {
+      "nextjs": "React framework for production",
+      "express": "Fast, unopinionated web framework",
+      "nestjs": "Progressive Node.js framework",
+      "remix": "Full stack web framework",
+      "django": "Python web framework",
+      "flask": "Lightweight Python framework"
+    }
+  },
+  "ApiKeys": {
+    "title": "API Keys",
+    "description": "Manage and secure your project access credentials.",
+    "generate": "Generate New Key",
+    "tooltip": {
+      "limit": "Limit reached: 5 active keys per user",
+      "create": "Create a new API key"
+    },
+    "securityTitle": "API Key Security",
+    "securityDescription": "Your API keys are sensitive credentials. Treat them like passwords — never share them publicly or commit them to version control. Each key is unique per project and can be revoked instantly if compromised. You will only see your key once upon creation for your security.",
+    "yourKeys": "Your API Keys",
+    "keyCount": "{count} keys",
+    "loadingKeys": "Loading saved API keys…",
+    "noKeys": "No API keys created yet. Generate one to start using the PulseFront API.",
+    "refreshing": "Refreshing keys…",
+    "table": {
+      "name": "Name",
+      "scope": "Scope",
+      "created": "Created",
+      "lastUsed": "Last Used",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "scope": {
+      "fullAccess": "Full Access",
+      "readOnly": "Read Only",
+      "writeOnly": "Write Only"
+    },
+    "status": {
+      "active": "Active",
+      "revoked": "Revoked"
+    },
+    "revoke": "Revoke",
+    "detail": {
+      "title": "API Key Details",
+      "cannotDeleteDefault": "Cannot delete the system-generated Default API key",
+      "cannotRevokeLast": "Cannot revoke the only active API key",
+      "revokeThis": "Revoke this API key"
+    },
+    "toast": {
+      "cannotDeleteDefault": "Cannot delete the system-generated Default API key",
+      "cannotRevokeLast": "Cannot revoke the only active API key"
+    },
+    "generateDialog": {
+      "title": "Generate New API Key",
+      "description": "Create a new API key with scoped permissions. You will only see the key once.",
+      "limitMessage": "You have reached the limit of 5 active keys. Revoke one to create a new key.",
+      "keyName": "Key Name",
+      "keyNamePlaceholder": "Enter key name",
+      "scope": "Scope",
+      "expiry": "Expiry",
+      "never": "Never",
+      "days": "{count} Days",
+      "creating": "Creating…",
+      "create": "Create Key"
+    },
+    "revealDialog": {
+      "title": "Your New API Key",
+      "description": "You will only see this key once. Copy and store it securely.",
+      "secret": "Secret",
+      "copied": "Copied",
+      "copy": "Copy",
+      "copiedTooltip": "Copied!",
+      "warning": "For security, we cannot show this key again or recover it later.",
+      "confirm": "I stored it safely"
+    },
+    "footer": {
+      "activeKeys": "Active Keys",
+      "revoked": "Revoked",
+      "lastGenerated": "Last Generated"
+    },
+    "timeAgo": {
+      "justNow": "just now",
+      "minutes": "{count} min ago",
+      "hours": "{count} hours ago",
+      "days": "{count} days ago"
+    }
+  },
+  "Settings": {
+    "title": "Settings",
+    "description": "Manage billing, project configuration, and account preferences.",
+    "tabs": {
+      "billing": "Billing & Plan",
+      "project": "Project Settings",
+      "account": "Account & Security",
+      "danger": "Danger Zone"
+    },
+    "billing": {
+      "title": "Billing & Plan",
+      "description": "Manage your subscription and usage securely. All payments are handled via Stripe.",
+      "currentPlan": "Current Plan",
+      "active": "Active",
+      "changePlan": "Change Plan",
+      "selectPlan": "Select a plan",
+      "usage": "Usage",
+      "nextInvoice": "Next Invoice",
+      "notApplicable": "N/A",
+      "currentPlanButton": "Current Plan",
+      "upgradePlan": "Upgrade Plan",
+      "invoices": "Invoices",
+      "invoiceCount": "{count} invoices",
+      "exportCsv": "Export CSV",
+      "table": {
+        "invoiceId": "Invoice ID",
+        "date": "Date",
+        "amount": "Amount",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "downloadPdf": "Download PDF",
+      "noInvoices": "No invoices available yet!"
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "price": "$0",
+        "logsLimit": "10k logs/month",
+        "features": {
+          "logs": "10k logs/month",
+          "retention": "7-day retention",
+          "search": "Advanced search",
+          "emailSupport": "Email support",
+          "apiAccess": "API ACCESS"
+        }
+      },
+      "starter": {
+        "name": "Starter",
+        "price": "$9.99",
+        "logsLimit": "100k logs/month",
+        "features": {
+          "logs": "100k logs/month",
+          "retention": "30-day retention",
+          "search": "Advanced search",
+          "prioritySupport": "Priority support",
+          "apiAccess": "API ACCESS"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "$19.99",
+        "logsLimit": "1M logs/month",
+        "features": {
+          "logs": "1M logs/month",
+          "retention": "90-day retention",
+          "alerts": "Real-time alerts",
+          "support": "24/7 support",
+          "apiAccess": "API ACCESS"
+        }
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "logsLimit": "Unlimited logs",
+        "features": {
+          "logs": "Unlimited logs",
+          "retention": "Custom retention",
+          "support": "Dedicated support",
+          "sla": "SLA guarantee",
+          "security": "Advanced security",
+          "onPremise": "On-premise option"
+        }
+      }
+    },
+    "project": {
+      "title": "Project Settings",
+      "description": "View your project configuration details.",
+      "name": "Project Name",
+      "nameHint": "The name of your project",
+      "nameValue": "Default Project",
+      "region": "Region",
+      "regionHint": "Data center location",
+      "regionValue": "US-East-1",
+      "regionDetail": "N. Virginia",
+      "timezone": "Timezone",
+      "timezoneHint": "Used for log timestamps",
+      "timezoneValue": "EST (UTC-5)",
+      "timezoneDetail": "Eastern Standard Time"
+    },
+    "account": {
+      "title": "Account & Security",
+      "description": "View your account information and current subscription.",
+      "name": "Name",
+      "nameHint": "Your account name",
+      "email": "Email",
+      "emailHint": "Your account email address",
+      "joined": "Joined",
+      "joinedHint": "Account creation date",
+      "plan": "Plan",
+      "planHint": "Current subscription tier",
+      "notSet": "Not set",
+      "notAvailable": "Not available"
+    },
+    "danger": {
+      "title": "Danger Zone",
+      "description": "Deleting your account is irreversible. All data, logs, and API keys will be permanently removed after 14 days.",
+      "deleteAccount": "Delete Account",
+      "dialog": {
+        "title": "Delete Account",
+        "description": "This action cannot be undone. Your account deletion request will be processed with the following timeline:",
+        "holdTitle": "14-Day Security Hold",
+        "holdDescription": "Your account will be marked for deletion and inaccessible immediately. However, for security purposes, all data will be retained for 14 days.",
+        "purgeTitle": "Complete Data Deletion",
+        "purgeDescription": "After 14 days, all account data, logs, API keys, and associated information will be permanently deleted from our systems.",
+        "changeMind": "If you change your mind within the 14-day period, please contact support to restore your account.",
+        "confirm": "Delete My Account"
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -28,13 +29,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+type ActivityStatus = "ok" | "warn" | "error";
+type HealthStatus = "healthy" | "degraded" | "down";
+
 export default function Page() {
-  // Derived/extra data for new sections (kept client-side for now)
-  const health = [
-    { name: "Ingest Service", status: "healthy" },
-    { name: "Alerting Service", status: "healthy" },
-    { name: "Database", status: "healthy" },
-    { name: "Public API", status: "healthy" },
+  const t = useTranslations("Overview");
+  const tCommon = useTranslations("Common");
+
+  const health: { nameKey: string; statusKey: HealthStatus }[] = [
+    { nameKey: "ingest", statusKey: "healthy" },
+    { nameKey: "alerting", statusKey: "healthy" },
+    { nameKey: "database", statusKey: "healthy" },
+    { nameKey: "publicApi", statusKey: "healthy" },
   ];
 
   const [logsData, setLogsData] = React.useState<any>(null);
@@ -47,7 +53,12 @@ export default function Page() {
           errorRate: "0%",
           lineData: [],
           errorTrendData: [],
-          topActivity: [],
+          topActivity: [] as {
+            time: string;
+            source: string;
+            action: string;
+            status: ActivityStatus;
+          }[],
           topSources: [],
         };
       }
@@ -133,7 +144,7 @@ export default function Page() {
             hour12: false,
           });
 
-          let status = "ok";
+          let status: ActivityStatus = "ok";
           if (log.type === "error") status = "error";
           else if (log.type === "warn") status = "warn";
 
@@ -162,38 +173,52 @@ export default function Page() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
-        <p className="text-sm text-muted-foreground">
-          High‑level metrics and activity across your logs and alerts.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {t("title")}
+        </h1>
+        <p className="text-sm text-muted-foreground">{t("description")}</p>
       </div>
 
       {/* Row 1 — Metrics cards (6 compact) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-6 gap-4">
         {[
           {
-            label: "Logs (24h)",
+            key: "logs24h",
+            label: t("metrics.logs24h"),
             value: logsData?.totalCount ?? 0,
           },
-          { label: "Error Rate", value: errorRate },
           {
-            label: "Ingest Rate",
+            key: "errorRate",
+            label: t("metrics.errorRate"),
+            value: errorRate,
+          },
+          {
+            key: "ingestRate",
+            label: t("metrics.ingestRate"),
             value: metrics ? fmtRate(metrics.ingestRate) : "—",
             live: true,
           },
-          { label: "Active Alerts", value: "0" },
           {
-            label: "Avg Latency",
+            key: "activeAlerts",
+            label: t("metrics.activeAlerts"),
+            value: "0",
+          },
+          {
+            key: "avgLatency",
+            label: t("metrics.avgLatency"),
             value: metrics ? `${metrics.avgLatency}ms` : "—",
             live: true,
           },
           {
-            label: "Queue Backlog",
-            value: metrics ? `${metrics.backlog} jobs` : "—",
+            key: "queueBacklog",
+            label: t("metrics.queueBacklog"),
+            value: metrics
+              ? t("metrics.jobs", { count: metrics.backlog })
+              : "—",
             live: true,
           },
         ].map((s) => (
-          <Card key={s.label} className="rounded-xl">
+          <Card key={s.key} className="rounded-xl">
             <CardHeader className="pb-1">
               <CardTitle className="text-xs text-muted-foreground flex items-center justify-between">
                 {s.label}
@@ -207,7 +232,7 @@ export default function Page() {
                         </span>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Live</p>
+                        <p>{tCommon("live")}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -225,7 +250,9 @@ export default function Page() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="rounded-2xl">
           <CardHeader>
-            <CardTitle className="text-sm">Logs Over Time (12h)</CardTitle>
+            <CardTitle className="text-sm">
+              {t("charts.logsOverTime")}
+            </CardTitle>
           </CardHeader>
           <CardContent className="h-70">
             <ResponsiveContainer width="100%" height="100%">
@@ -253,7 +280,7 @@ export default function Page() {
 
         <Card className="rounded-2xl">
           <CardHeader>
-            <CardTitle className="text-sm">Error Trend (12h)</CardTitle>
+            <CardTitle className="text-sm">{t("charts.errorTrend")}</CardTitle>
           </CardHeader>
           <CardContent className="h-70">
             <ResponsiveContainer width="100%" height="100%">
@@ -282,7 +309,7 @@ export default function Page() {
 
         <Card className="rounded-2xl">
           <CardHeader>
-            <CardTitle className="text-sm">Top Sources (24h)</CardTitle>
+            <CardTitle className="text-sm">{t("charts.topSources")}</CardTitle>
           </CardHeader>
           <CardContent className="h-70">
             {topSources.length > 0 ? (
@@ -319,7 +346,7 @@ export default function Page() {
               </div>
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                Enough data not available yet!
+                {tCommon("noData")}
               </div>
             )}
           </CardContent>
@@ -331,16 +358,16 @@ export default function Page() {
         {/* Left (65%) — Top Activity table */}
         <Card className="rounded-2xl xl:col-span-8">
           <CardHeader>
-            <CardTitle className="text-sm">Top Activity (24h)</CardTitle>
+            <CardTitle className="text-sm">{t("topActivity")}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Source</TableHead>
-                  <TableHead>Action</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>{t("table.time")}</TableHead>
+                  <TableHead>{t("table.source")}</TableHead>
+                  <TableHead>{t("table.action")}</TableHead>
+                  <TableHead>{t("table.status")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -359,7 +386,7 @@ export default function Page() {
                               : "text-red-500"
                         }
                       >
-                        {row.status}
+                        {t(`status.${row.status}`)}
                       </span>
                     </TableCell>
                   </TableRow>
@@ -372,7 +399,7 @@ export default function Page() {
                       className="h-24 flex items-center justify-center"
                     >
                       <div className="text-sm text-muted-foreground">
-                        Enough data not available yet!
+                        {tCommon("noData")}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -386,16 +413,19 @@ export default function Page() {
         <div className="flex flex-col gap-6 xl:col-span-4">
           <Card className="rounded-2xl">
             <CardHeader>
-              <CardTitle className="text-sm">System Health</CardTitle>
+              <CardTitle className="text-sm">{t("systemHealth")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {health.map((h) => (
-                <div key={h.name} className="flex items-center justify-between">
+                <div
+                  key={h.nameKey}
+                  className="flex items-center justify-between"
+                >
                   <span className="text-sm text-muted-foreground">
-                    {h.name}
+                    {t(`services.${h.nameKey}`)}
                   </span>
                   <div className="flex items-center gap-2">
-                    {h.status === "healthy" ? (
+                    {h.statusKey === "healthy" ? (
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
@@ -405,7 +435,7 @@ export default function Page() {
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Live</p>
+                            <p>{tCommon("live")}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -413,13 +443,15 @@ export default function Page() {
                       <span
                         className={
                           "inline-block h-2 w-2 rounded-full " +
-                          (h.status === "degraded"
+                          (h.statusKey === "degraded"
                             ? "bg-yellow-500"
                             : "bg-red-500")
                         }
                       />
                     )}
-                    <span className="text-sm capitalize">{h.status}</span>
+                    <span className="text-sm capitalize">
+                      {t(`healthStatus.${h.statusKey}`)}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -428,11 +460,11 @@ export default function Page() {
 
           <Card className="rounded-2xl">
             <CardHeader>
-              <CardTitle className="text-sm">Recent Alerts</CardTitle>
+              <CardTitle className="text-sm">{t("recentAlerts")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                Enough data not available yet!
+                {tCommon("noData")}
               </div>
             </CardContent>
           </Card>

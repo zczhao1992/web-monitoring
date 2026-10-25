@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -33,6 +34,16 @@ type LogEntry = {
   message: string;
   payload: Record<string, unknown>;
 };
+
+const LOG_LEVELS: LogLevel[] = [
+  "error",
+  "warning",
+  "info",
+  "debug",
+  "success",
+  "audit",
+  "metric",
+];
 
 const STATIC_LOG_TAIL: LogEntry[] = [
   {
@@ -242,8 +253,11 @@ function buildLiveLog(index: number): LogEntry {
 }
 
 export default function LiveLogsPage() {
+  const t = useTranslations("LiveLogs");
+  const tLevels = useTranslations("Levels");
+  const locale = useLocale();
   const [logs, setLogs] = React.useState<LogEntry[]>(STATIC_LOG_TAIL);
-  const [filterLevel, setFilterLevel] = React.useState<"All" | LogLevel>("All");
+  const [filterLevel, setFilterLevel] = React.useState<"all" | LogLevel>("all");
   const [search, setSearch] = React.useState("");
   const [selected, setSelected] = React.useState<LogEntry | null>(null);
   const streamRef = React.useRef<HTMLDivElement>(null);
@@ -268,7 +282,7 @@ export default function LiveLogsPage() {
 
   const filteredLogs: LogEntry[] = React.useMemo(() => {
     return logs.filter((l) => {
-      const byLevel = filterLevel === "All" ? true : l.level === filterLevel;
+      const byLevel = filterLevel === "all" ? true : l.level === filterLevel;
       const bySearch =
         search.trim().length === 0
           ? true
@@ -297,42 +311,42 @@ export default function LiveLogsPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Log Tail</h1>
-          <p className="text-sm text-muted-foreground">
-            Watch new log lines arrive every second.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
       </div>
 
       {/* Filters Row (horizontal) */}
       <div className="flex items-end gap-3">
         <div className="w-55">
-          <div className="text-xs text-muted-foreground mb-1">Category</div>
+          <div className="text-xs text-muted-foreground mb-1">
+            {t("category")}
+          </div>
           <Select
             value={filterLevel}
             onValueChange={(v) =>
-              setFilterLevel(v === "All" ? "All" : (v as LogLevel))
+              setFilterLevel(v === "all" ? "all" : (v as LogLevel))
             }
           >
             <SelectTrigger className="w-full rounded-xl">
-              <SelectValue placeholder="Select category" />
+              <SelectValue placeholder={t("categoryPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All">All</SelectItem>
-              <SelectItem value="error">Error</SelectItem>
-              <SelectItem value="warning">Warning</SelectItem>
-              <SelectItem value="info">Info</SelectItem>
-              <SelectItem value="debug">Debug</SelectItem>
-              <SelectItem value="success">Success</SelectItem>
-              <SelectItem value="audit">Audit</SelectItem>
-              <SelectItem value="metric">Metric</SelectItem>
+              <SelectItem value="all">{tLevels("all")}</SelectItem>
+              {LOG_LEVELS.map((level) => (
+                <SelectItem key={level} value={level}>
+                  {tLevels(level)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
         <div className="flex-1">
-          <div className="text-xs text-muted-foreground mb-1">Search</div>
+          <div className="text-xs text-muted-foreground mb-1">
+            {t("search")}
+          </div>
           <Input
-            placeholder="Search logs (e.g. message: timeout)"
+            placeholder={t("searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="rounded-xl"
@@ -346,10 +360,12 @@ export default function LiveLogsPage() {
           <div className="flex items-center gap-2">
             <ActivityIcon className="h-4 w-4 opacity-60" />
             <span className="text-xs text-muted-foreground">
-              Live tail • {logs.length} entries
+              {t("liveTail", { count: logs.length })}
             </span>
           </div>
-          <span className="text-xs text-muted-foreground">Updates every second</span>
+          <span className="text-xs text-muted-foreground">
+            {t("updatesEverySecond")}
+          </span>
         </div>
 
         <div
@@ -366,7 +382,7 @@ export default function LiveLogsPage() {
           {filteredLogs.length === 0 ? (
             <div className="flex h-full items-center justify-center text-muted-foreground">
               <ActivityIcon className="mr-2 h-4 w-4" />
-              No matching logs in the static tail.
+              {t("empty")}
             </div>
           ) : (
             <ul className="divide-y divide-white/5">
@@ -377,13 +393,13 @@ export default function LiveLogsPage() {
                   onClick={() => setSelected(l)}
                 >
                   <span className="text-[11px] text-white/50 mr-2">
-                    {new Date(l.ts).toLocaleTimeString()}
+                    {new Date(l.ts).toLocaleTimeString(locale)}
                   </span>
                   <span
                     className="mr-2 font-medium"
                     style={{ color: levelColor[l.level] }}
                   >
-                    [{l.level.toUpperCase()}]
+                    [{tLevels(l.level).toUpperCase()}]
                   </span>
                   <span className="mr-2 text-white/70">{l.source}</span>
                   <span className="block text-white/90 whitespace-nowrap overflow-hidden text-ellipsis group-hover:whitespace-normal group-hover:wrap-break-word">
@@ -407,7 +423,7 @@ export default function LiveLogsPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium">Log Details</h3>
+              <h3 className="text-sm font-medium">{t("details")}</h3>
               <Button
                 variant="outline"
                 size="sm"
@@ -419,41 +435,49 @@ export default function LiveLogsPage() {
                 }}
               >
                 <Clipboard className="mr-2 h-3.5 w-3.5" />
-                Copy JSON
+                {t("copyJson")}
               </Button>
             </div>
             <Tabs defaultValue="formatted" className="mt-3">
               <TabsList>
-                <TabsTrigger value="formatted">Formatted</TabsTrigger>
-                <TabsTrigger value="raw">Raw JSON</TabsTrigger>
+                <TabsTrigger value="formatted">{t("formatted")}</TabsTrigger>
+                <TabsTrigger value="raw">{t("rawJson")}</TabsTrigger>
               </TabsList>
               <TabsContent value="formatted" className="mt-3">
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Timestamp</span>
-                    <span>{new Date(selected.ts).toLocaleString()}</span>
+                    <span className="text-muted-foreground">
+                      {t("timestamp")}
+                    </span>
+                    <span>
+                      {new Date(selected.ts).toLocaleString(locale)}
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Level</span>
+                    <span className="text-muted-foreground">{t("level")}</span>
                     <span
                       className="font-medium"
                       style={{ color: levelColor[selected.level] }}
                     >
-                      {selected.level}
+                      {tLevels(selected.level)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Source</span>
+                    <span className="text-muted-foreground">{t("source")}</span>
                     <span>{selected.source}</span>
                   </div>
                   <div>
-                    <div className="text-muted-foreground mb-1">Message</div>
+                    <div className="text-muted-foreground mb-1">
+                      {t("message")}
+                    </div>
                     <div className="rounded-lg border border-white/10 bg-black/20 p-2">
                       {selected.message}
                     </div>
                   </div>
                   <div>
-                    <div className="text-muted-foreground mb-1">Payload</div>
+                    <div className="text-muted-foreground mb-1">
+                      {t("payload")}
+                    </div>
                     <pre className="rounded-lg border border-white/10 bg-black/20 p-2 overflow-x-auto text-xs">
                       {JSON.stringify(selected.payload, null, 2)}
                     </pre>
@@ -478,11 +502,13 @@ export default function LiveLogsPage() {
         }}
       >
         <div className="flex items-center gap-6">
-          <span className="text-muted-foreground">Logs Loaded</span>
-          <span className="font-medium">{stats.total.toLocaleString()}</span>
-          <span className="text-muted-foreground">Errors</span>
+          <span className="text-muted-foreground">{t("logsLoaded")}</span>
+          <span className="font-medium">
+            {stats.total.toLocaleString(locale)}
+          </span>
+          <span className="text-muted-foreground">{t("errors")}</span>
           <span className="font-medium">{stats.errors}</span>
-          <span className="text-muted-foreground">Warnings</span>
+          <span className="text-muted-foreground">{t("warnings")}</span>
           <span className="font-medium">{stats.warnings}</span>
         </div>
       </div>

@@ -1,18 +1,19 @@
 import React from "react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
-import NextJs from "../../assets/frameworks/next-js.svg";
-import ExpressJs from "../../assets/frameworks/express-js.svg";
-import NestJs from "../../assets/frameworks/nest-js.png";
-import RemixJs from "../../assets/frameworks/remix-js.png";
-import Django from "../../assets/frameworks/django.svg";
-import Flask from "../../assets/frameworks/Flask.svg";
+import NextJs from "../../../assets/frameworks/next-js.svg";
+import ExpressJs from "../../../assets/frameworks/express-js.svg";
+import NestJs from "../../../assets/frameworks/nest-js.png";
+import RemixJs from "../../../assets/frameworks/remix-js.png";
+import Django from "../../../assets/frameworks/django.svg";
+import Flask from "../../../assets/frameworks/Flask.svg";
 
 const integrations = [
   {
     id: "nextjs",
     name: "Next.js",
-    description: "React framework for production",
+    descriptionKey: "nextjs",
     logo: NextJs,
     docsUrl: "https://oneminutelogs.com/docs/nextjs",
     available: true,
@@ -20,7 +21,7 @@ const integrations = [
   {
     id: "express",
     name: "Express.js",
-    description: "Fast, unopinionated web framework",
+    descriptionKey: "express",
     logo: ExpressJs,
     docsUrl: "https://oneminutelogs.com/docs/express",
     available: true,
@@ -28,7 +29,7 @@ const integrations = [
   {
     id: "nestjs",
     name: "NestJS",
-    description: "Progressive Node.js framework",
+    descriptionKey: "nestjs",
     logo: NestJs,
     docsUrl: "#",
     available: false,
@@ -36,7 +37,7 @@ const integrations = [
   {
     id: "remix",
     name: "Remix",
-    description: "Full stack web framework",
+    descriptionKey: "remix",
     logo: RemixJs,
     docsUrl: "#",
     available: false,
@@ -44,7 +45,7 @@ const integrations = [
   {
     id: "django",
     name: "Django",
-    description: "Python web framework",
+    descriptionKey: "django",
     logo: Django,
     docsUrl: "#",
     available: false,
@@ -52,21 +53,23 @@ const integrations = [
   {
     id: "flask",
     name: "Flask",
-    description: "Lightweight Python framework",
+    descriptionKey: "flask",
     logo: Flask,
     docsUrl: "#",
     available: false,
   },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const t = await getTranslations("Integrations");
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Integrations</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Connect OneMinute Logs to your favorite frameworks
+          {t("description")}
         </p>
       </div>
 
@@ -98,7 +101,7 @@ export default function Page() {
                         {integration.name}
                       </h3>
                       <p className="text-xs text-white/40 leading-tight">
-                        {integration.description}
+                        {t(`frameworks.${integration.descriptionKey}`)}
                       </p>
                     </div>
                   </div>
@@ -132,7 +135,7 @@ export default function Page() {
                       {integration.name}
                     </h3>
                     <p className="text-xs text-white/40 leading-tight">
-                      Coming soon
+                      {t("comingSoon")}
                     </p>
                   </div>
                 </div>

@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
@@ -35,68 +36,42 @@ import {
 } from "@/components/ui/dialog";
 import { useUser } from "@clerk/nextjs";
 
+type PlanId = "free" | "starter" | "pro" | "enterprise";
+
+const PLANS: PlanId[] = ["free", "starter", "pro", "enterprise"];
+
+// Plan feature list per tier, in display order
+const PLAN_FEATURES: Record<PlanId, string[]> = {
+  free: ["logs", "retention", "search", "emailSupport", "apiAccess"],
+  starter: ["logs", "retention", "search", "prioritySupport", "apiAccess"],
+  pro: ["logs", "retention", "alerts", "support", "apiAccess"],
+  enterprise: ["logs", "retention", "support", "sla", "security", "onPremise"],
+};
+
 export default function Page() {
+  const t = useTranslations("Settings");
+  const tCommon = useTranslations("Common");
+  const locale = useLocale();
   const { user, isLoaded } = useUser();
-  const currentPlan = "free" as "free" | "starter" | "pro" | "enterprise";
-  const [selectedPlan, setSelectedPlan] = React.useState<
-    "free" | "starter" | "pro" | "enterprise"
-  >(currentPlan);
+  const currentPlan: PlanId = "free";
+  const [selectedPlan, setSelectedPlan] = React.useState<PlanId>(currentPlan);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
-  // Plan details matching the pricing page
-  const planDetails = {
-    free: {
-      name: "Free",
-      price: "$0",
-      features: [
-        "10k logs/month",
-        "7-day retention",
-        "Advanced search",
-        "Email support",
-        "API ACCESS",
-      ],
-      logsLimit: "10k logs/month",
-    },
-    starter: {
-      name: "Starter",
-      price: "$9.99",
-      features: [
-        "100k logs/month",
-        "30-day retention",
-        "Advanced search",
-        "Priority support",
-        "API ACCESS",
-      ],
-      logsLimit: "100k logs/month",
-    },
-    pro: {
-      name: "Pro",
-      price: "$19.99",
-      features: [
-        "1M logs/month",
-        "90-day retention",
-        "Real-time alerts",
-        "24/7 support",
-        "API ACCESS",
-      ],
-      logsLimit: "1M logs/month",
-    },
-    enterprise: {
-      name: "Enterprise",
-      price: "Custom",
-      features: [
-        "Unlimited logs",
-        "Custom retention",
-        "Dedicated support",
-        "SLA guarantee",
-        "Advanced security",
-        "On-premise option",
-      ],
-      logsLimit: "Unlimited logs",
-    },
+  const planOrder: Record<PlanId, number> = {
+    free: 0,
+    starter: 1,
+    pro: 2,
+    enterprise: 3,
   };
+  const canUpgrade = planOrder[selectedPlan] > planOrder[currentPlan];
 
-  const currentPlanDetails = planDetails[currentPlan];
+  const currentPlanDetails = {
+    name: t(`plans.${currentPlan}.name`),
+    features: PLAN_FEATURES[currentPlan].map((feature) =>
+      t(`plans.${currentPlan}.features.${feature}`),
+    ),
+    logsLimit: t(`plans.${currentPlan}.logsLimit`),
+  };
 
   // Design tokens for a premium look
   const TOKENS = {
@@ -116,10 +91,8 @@ export default function Page() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-          <p className="text-sm text-muted-foreground">
-            Manage billing, project configuration, and account preferences.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
       </div>
       {/* Tabs */}
@@ -130,25 +103,25 @@ export default function Page() {
               value="billing"
               className="px-3 py-2 text-sm font-medium rounded-none border-b-2 border-transparent text-muted-foreground hover:text-white/90 data-[state=active]:text-white data-[state=active]:border-b-[#00C2A8]"
             >
-              Billing & Plan
+              {t("tabs.billing")}
             </TabsTrigger>
             <TabsTrigger
               value="project"
               className="px-3 py-2 text-sm font-medium rounded-none border-b-2 border-transparent text-muted-foreground hover:text-white/90 data-[state=active]:text-white data-[state=active]:border-b-[#00C2A8]"
             >
-              Project Settings
+              {t("tabs.project")}
             </TabsTrigger>
             <TabsTrigger
               value="account"
               className="px-3 py-2 text-sm font-medium rounded-none border-b-2 border-transparent text-muted-foreground hover:text-white/90 data-[state=active]:text-white data-[state=active]:border-b-[#00C2A8]"
             >
-              Account & Security
+              {t("tabs.account")}
             </TabsTrigger>
             <TabsTrigger
               value="danger"
               className="px-3 py-2 text-sm font-medium rounded-none border-b-2 border-transparent text-muted-foreground hover:text-white/90 data-[state=active]:text-white data-[state=active]:border-b-[#00C2A8]"
             >
-              Danger Zone
+              {t("tabs.danger")}
             </TabsTrigger>
           </TabsList>
         </div>
@@ -164,10 +137,9 @@ export default function Page() {
             }}
           >
             <div className="space-y-4">
-              <h3 className="text-sm font-medium">Billing & Plan</h3>
+              <h3 className="text-sm font-medium">{t("billing.title")}</h3>
               <p className="text-sm text-muted-foreground">
-                Manage your subscription and usage securely. All payments are
-                handled via Stripe.
+                {t("billing.description")}
               </p>
 
               {/* Premium two-card layout */}
@@ -180,11 +152,11 @@ export default function Page() {
                   }}
                 >
                   <div className="text-xs text-muted-foreground mb-2">
-                    Current Plan
+                    {t("billing.currentPlan")}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-base font-semibold capitalize">
-                      {!isLoaded ? "Loading..." : currentPlanDetails.name}
+                    <span className="text-base font-semibold">
+                      {!isLoaded ? tCommon("loading") : currentPlanDetails.name}
                     </span>
                     <span
                       className="text-[11px] px-2 py-0.5 rounded-full border"
@@ -194,7 +166,7 @@ export default function Page() {
                         color: TOKENS.accent,
                       }}
                     >
-                      Active
+                      {t("billing.active")}
                     </span>
                   </div>
 
@@ -222,38 +194,44 @@ export default function Page() {
                   }}
                 >
                   <div className="text-xs text-muted-foreground mb-2">
-                    Change Plan
+                    {t("billing.changePlan")}
                   </div>
                   <Select
                     value={selectedPlan}
-                    onValueChange={(v) =>
-                      setSelectedPlan(v as typeof selectedPlan)
-                    }
+                    onValueChange={(v) => setSelectedPlan(v as PlanId)}
                   >
                     <SelectTrigger className="w-full rounded-md">
-                      <SelectValue placeholder="Select a plan" />
+                      <SelectValue placeholder={t("billing.selectPlan")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="free">Free</SelectItem>
-                      <SelectItem value="starter">Starter</SelectItem>
-                      <SelectItem value="pro">Pro</SelectItem>
-                      <SelectItem value="enterprise">Enterprise</SelectItem>
+                      {PLANS.map((plan) => (
+                        <SelectItem key={plan} value={plan}>
+                          {t(`plans.${plan}.name`)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
 
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <div className="text-xs text-muted-foreground">Usage</div>
+                      <div className="text-xs text-muted-foreground">
+                        {t("billing.usage")}
+                      </div>
                       <div className="font-medium">
                         {currentPlanDetails.logsLimit}
                       </div>
                     </div>
                     <div>
                       <div className="text-xs text-muted-foreground">
-                        Next Invoice
+                        {t("billing.nextInvoice")}
                       </div>
                       <div className="font-medium">
-                        {currentPlan === "free" ? "N/A" : "Nov 30, 2025"}
+                        {currentPlan === "free"
+                          ? t("billing.notApplicable")
+                          : new Date("2025-11-30T00:00:00Z").toLocaleDateString(
+                              locale,
+                              { year: "numeric", month: "short", day: "numeric" },
+                            )}
                       </div>
                     </div>
                   </div>
@@ -261,15 +239,12 @@ export default function Page() {
                   <div className="flex justify-end gap-2 pt-3">
                     <Button
                       className="rounded-md"
-                      disabled={
-                        selectedPlan === currentPlan ||
-                        currentPlan === "enterprise"
-                      }
+                      disabled={!canUpgrade}
                     >
                       <ArrowUpCircle className="mr-2 h-4 w-4" />
                       {selectedPlan === currentPlan
-                        ? "Current Plan"
-                        : "Upgrade Plan"}
+                        ? t("billing.currentPlanButton")
+                        : t("billing.upgradePlan")}
                     </Button>
                   </div>
                 </div>
@@ -278,10 +253,10 @@ export default function Page() {
               {/* Invoices table (polished) */}
               <div className="mt-6">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-medium">Invoices</h4>
+                  <h4 className="text-sm font-medium">{t("billing.invoices")}</h4>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted-foreground">
-                      {invoices.length} invoices
+                      {t("billing.invoiceCount", { count: invoices.length })}
                     </span>
                     <Button
                       variant="outline"
@@ -289,7 +264,7 @@ export default function Page() {
                       className="rounded-lg hover:bg-white/10"
                     >
                       <Download className="h-4 w-4" />
-                      Export CSV
+                      {t("billing.exportCsv")}
                     </Button>
                   </div>
                 </div>
@@ -304,19 +279,19 @@ export default function Page() {
                     <TableHeader>
                       <TableRow className="border-b-[0.5px] border-white/10">
                         <TableHead className="text-xs text-white/60">
-                          Invoice ID
+                          {t("billing.table.invoiceId")}
                         </TableHead>
                         <TableHead className="text-xs text-white/60">
-                          Date
+                          {t("billing.table.date")}
                         </TableHead>
                         <TableHead className="text-xs text-white/60">
-                          Amount
+                          {t("billing.table.amount")}
                         </TableHead>
                         <TableHead className="text-xs text-white/60">
-                          Status
+                          {t("billing.table.status")}
                         </TableHead>
                         <TableHead className="text-xs text-white/60">
-                          Actions
+                          {t("billing.table.actions")}
                         </TableHead>
                       </TableRow>
                     </TableHeader>
@@ -356,7 +331,7 @@ export default function Page() {
                                   className="rounded-lg opacity-80 group-hover:opacity-100 hover:bg-[rgba(0,194,168,0.15)]"
                                 >
                                   <Download className="h-4 w-4" />
-                                  Download PDF
+                                  {t("billing.downloadPdf")}
                                 </Button>
                               </TableCell>
                             </TableRow>
@@ -365,7 +340,7 @@ export default function Page() {
                       ) : (
                         <TableRow>
                           <TableCell colSpan={5} className="h-24 text-center">
-                            No invoices available yet!
+                            {t("billing.noInvoices")}
                           </TableCell>
                         </TableRow>
                       )}
@@ -389,9 +364,9 @@ export default function Page() {
           >
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-medium">Project Settings</h3>
+                <h3 className="text-sm font-medium">{t("project.title")}</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  View your project configuration details.
+                  {t("project.description")}
                 </p>
               </div>
 
@@ -400,32 +375,32 @@ export default function Page() {
                 <div className="flex items-center justify-between py-3 border-b border-white/5">
                   <div>
                     <div className="text-sm font-medium text-white/90">
-                      Project Name
+                      {t("project.name")}
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">
-                      The name of your project
+                      {t("project.nameHint")}
                     </div>
                   </div>
                   <div className="text-sm font-semibold text-white">
-                    Default Project
+                    {t("project.nameValue")}
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between py-3 border-b border-white/5">
                   <div>
                     <div className="text-sm font-medium text-white/90">
-                      Region
+                      {t("project.region")}
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">
-                      Data center location
+                      {t("project.regionHint")}
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-sm font-semibold text-white">
-                      US-East-1
+                      {t("project.regionValue")}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      N. Virginia
+                      {t("project.regionDetail")}
                     </div>
                   </div>
                 </div>
@@ -433,18 +408,18 @@ export default function Page() {
                 <div className="flex items-center justify-between py-3">
                   <div>
                     <div className="text-sm font-medium text-white/90">
-                      Timezone
+                      {t("project.timezone")}
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">
-                      Used for log timestamps
+                      {t("project.timezoneHint")}
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-sm font-semibold text-white">
-                      EST (UTC-5)
+                      {t("project.timezoneValue")}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Eastern Standard Time
+                      {t("project.timezoneDetail")}
                     </div>
                   </div>
                 </div>
@@ -465,9 +440,9 @@ export default function Page() {
           >
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-medium">Account & Security</h3>
+                <h3 className="text-sm font-medium">{t("account.title")}</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  View your account information and current subscription.
+                  {t("account.description")}
                 </p>
               </div>
 
@@ -476,73 +451,74 @@ export default function Page() {
                 <div className="flex items-center justify-between py-3 border-b border-white/5">
                   <div>
                     <div className="text-sm font-medium text-white/90">
-                      Name
+                      {t("account.name")}
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">
-                      Your account name
+                      {t("account.nameHint")}
                     </div>
                   </div>
                   <div className="text-sm font-semibold text-white">
-                    {user?.fullName || "Not set"}
+                    {user?.fullName || t("account.notSet")}
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between py-3 border-b border-white/5">
                   <div>
                     <div className="text-sm font-medium text-white/90">
-                      Email
+                      {t("account.email")}
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">
-                      Your account email address
+                      {t("account.emailHint")}
                     </div>
                   </div>
                   <div className="text-sm font-semibold text-white">
-                    {user?.emailAddresses[0].emailAddress || "Not available"}
+                    {user?.emailAddresses[0].emailAddress ||
+                      t("account.notAvailable")}
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between py-3 border-b border-white/5">
                   <div>
                     <div className="text-sm font-medium text-white/90">
-                      Joined
+                      {t("account.joined")}
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">
-                      Account creation date
+                      {t("account.joinedHint")}
                     </div>
                   </div>
                   <div className="text-sm font-semibold text-white">
                     {user?.createdAt
-                      ? new Date(user.createdAt).toLocaleDateString("en-US", {
+                      ? new Date(user.createdAt).toLocaleDateString(locale, {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
                         })
-                      : "Not available"}
+                      : t("account.notAvailable")}
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between py-3">
                   <div>
                     <div className="text-sm font-medium text-white/90">
-                      Plan
+                      {t("account.plan")}
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">
-                      Current subscription tier
+                      {t("account.planHint")}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-white capitalize">
+                    <span className="text-sm font-semibold text-white">
                       {currentPlanDetails.name}
                     </span>
                     <span
-                      className="text-[11px] px-2 py-0.5 rounded-full border capitalize"
+                      className="text-[11px] px-2 py-0.5 rounded-full border"
                       style={{
                         background: "rgba(0,194,168,0.12)",
                         borderColor: "rgba(0,194,168,0.35)",
                         color: TOKENS.accent,
                       }}
                     >
-                      {currentPlan}
+                      {t(`plans.${currentPlan}.name`)}
                     </span>
                   </div>
                 </div>
@@ -562,10 +538,9 @@ export default function Page() {
             }}
           >
             <div className="space-y-3">
-              <h3 className="text-sm font-medium">Danger Zone</h3>
+              <h3 className="text-sm font-medium">{t("danger.title")}</h3>
               <p className="text-sm text-muted-foreground">
-                Deleting your account is irreversible. All data, logs, and API
-                keys will be permanently removed after 14 days.
+                {t("danger.description")}
               </p>
               <div className="flex justify-end pt-2">
                 <Dialog
@@ -575,7 +550,7 @@ export default function Page() {
                   <DialogTrigger asChild>
                     <Button variant="destructive" className="rounded-md">
                       <Trash2 className="mr-2 h-4 w-4" />
-                      Delete Account
+                      {t("danger.deleteAccount")}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-125">
@@ -592,15 +567,14 @@ export default function Page() {
                         </div>
                         <div>
                           <DialogTitle className="text-lg font-semibold">
-                            Delete Account
+                            {t("danger.dialog.title")}
                           </DialogTitle>
                         </div>
                       </div>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                       <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
-                        This action cannot be undone. Your account deletion
-                        request will be processed with the following timeline:
+                        {t("danger.dialog.description")}
                       </DialogDescription>
 
                       <div
@@ -616,12 +590,10 @@ export default function Page() {
                           </div>
                           <div className="flex-1">
                             <div className="text-sm font-medium text-white/90">
-                              14-Day Security Hold
+                              {t("danger.dialog.holdTitle")}
                             </div>
                             <div className="text-xs text-muted-foreground mt-1">
-                              Your account will be marked for deletion and
-                              inaccessible immediately. However, for security
-                              purposes, all data will be retained for 14 days.
+                              {t("danger.dialog.holdDescription")}
                             </div>
                           </div>
                         </div>
@@ -632,20 +604,17 @@ export default function Page() {
                           </div>
                           <div className="flex-1">
                             <div className="text-sm font-medium text-white/90">
-                              Complete Data Deletion
+                              {t("danger.dialog.purgeTitle")}
                             </div>
                             <div className="text-xs text-muted-foreground mt-1">
-                              After 14 days, all account data, logs, API keys,
-                              and associated information will be permanently
-                              deleted from our systems.
+                              {t("danger.dialog.purgeDescription")}
                             </div>
                           </div>
                         </div>
                       </div>
 
                       <div className="text-xs text-muted-foreground">
-                        If you change your mind within the 14-day period, please
-                        contact support to restore your account.
+                        {t("danger.dialog.changeMind")}
                       </div>
                     </div>
                     <DialogFooter className="gap-2">
@@ -654,7 +623,7 @@ export default function Page() {
                         onClick={() => setDeleteDialogOpen(false)}
                         className="rounded-md hover:bg-black/10"
                       >
-                        Cancel
+                        {tCommon("cancel")}
                       </Button>
                       <Button
                         variant="destructive"
@@ -665,7 +634,7 @@ export default function Page() {
                         className="rounded-md"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete My Account
+                        {t("danger.dialog.confirm")}
                       </Button>
                     </DialogFooter>
                   </DialogContent>

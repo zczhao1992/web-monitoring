@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,24 +29,33 @@ import {
 import { Plus, Bell } from "lucide-react";
 import { toast } from "sonner";
 
-export default function Page() {
-  type AlertRow = {
-    name: string;
-    condition: string;
-    status: "Active" | "Resolved";
-    severity: "High" | "Medium" | "Low";
-    lastTriggered: string;
-  };
+type AlertStatus = "active" | "resolved";
+type AlertSeverity = "high" | "medium" | "low";
 
-  const statusColors: Record<AlertRow["status"], string> = {
-    Active: "#00C2A8",
-    Resolved: "#6B7280",
-  };
-  const severityColors: Record<AlertRow["severity"], string> = {
-    High: "#F87171",
-    Medium: "#FBBF24",
-    Low: "#34D399",
-  };
+type AlertRow = {
+  name: string;
+  condition: string;
+  status: AlertStatus;
+  severity: AlertSeverity;
+  lastTriggered: string;
+};
+
+const statusColors: Record<AlertStatus, string> = {
+  active: "#00C2A8",
+  resolved: "#6B7280",
+};
+const severityColors: Record<AlertSeverity, string> = {
+  high: "#F87171",
+  medium: "#FBBF24",
+  low: "#34D399",
+};
+
+const SEVERITIES: AlertSeverity[] = ["low", "medium", "high"];
+const THRESHOLDS = ["5m", "15m", "1h"] as const;
+
+export default function Page() {
+  const t = useTranslations("Alerts");
+  const tCommon = useTranslations("Common");
 
   const initialAlerts: AlertRow[] = [];
 
@@ -53,22 +63,25 @@ export default function Page() {
   const [selected, setSelected] = React.useState<AlertRow | null>(null);
   const [newAlertOpen, setNewAlertOpen] = React.useState(false);
 
+  const thresholdLabel = (value: (typeof THRESHOLDS)[number]) =>
+    value === "1h"
+      ? t("dialog.hour")
+      : t("dialog.minutes", { count: Number.parseInt(value, 10) });
+
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Alerts</h1>
-          <p className="text-sm text-muted-foreground">
-            Monitor and manage active log-based alerts.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
         <Button
           className="rounded-xl"
-          onClick={() => toast.error("Alert creation coming soon from v2")}
+          onClick={() => toast.error(t("comingSoon"))}
         >
           <Plus className="h-4 w-4" />
-          New Alert
+          {t("newAlert")}
         </Button>
       </div>
 
@@ -83,10 +96,9 @@ export default function Page() {
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted/50 mb-4">
               <Bell className="h-6 w-6 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-medium">No alerts configured</h3>
+            <h3 className="text-lg font-medium">{t("emptyTitle")}</h3>
             <p className="text-sm text-muted-foreground mt-1 max-w-sm">
-              You haven&apos;t created any alerts yet. Set up alerts to get notified
-              about critical events in your system.
+              {t("emptyDescription")}
             </p>
           </div>
         ) : (
@@ -94,11 +106,11 @@ export default function Page() {
             <Table className="min-w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Condition</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Severity</TableHead>
-                  <TableHead>Last Triggered</TableHead>
+                  <TableHead>{t("table.name")}</TableHead>
+                  <TableHead>{t("table.condition")}</TableHead>
+                  <TableHead>{t("table.status")}</TableHead>
+                  <TableHead>{t("table.severity")}</TableHead>
+                  <TableHead>{t("table.lastTriggered")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -117,13 +129,13 @@ export default function Page() {
                       className="font-medium"
                       style={{ color: statusColors[a.status] }}
                     >
-                      {a.status}
+                      {t(`status.${a.status}`)}
                     </TableCell>
                     <TableCell
                       className="font-medium"
                       style={{ color: severityColors[a.severity] }}
                     >
-                      {a.severity}
+                      {t(`severity.${a.severity}`)}
                     </TableCell>
                     <TableCell className="text-white/60">
                       {a.lastTriggered}
@@ -149,52 +161,54 @@ export default function Page() {
       <Dialog open={newAlertOpen} onOpenChange={setNewAlertOpen}>
         <DialogContent className="sm:max-w-120">
           <DialogHeader>
-            <DialogTitle>Create New Alert</DialogTitle>
-            <DialogDescription>
-              Configure a new alert. It will be triggered when the condition
-              matches.
-            </DialogDescription>
+            <DialogTitle>{t("dialog.title")}</DialogTitle>
+            <DialogDescription>{t("dialog.description")}</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3">
             <div>
               <div className="text-xs text-muted-foreground mb-1">
-                Alert Name
+                {t("dialog.name")}
               </div>
-              <Input placeholder="Enter alert name" className="rounded-xl" />
+              <Input
+                placeholder={t("dialog.namePlaceholder")}
+                className="rounded-xl"
+              />
             </div>
             <div>
               <div className="text-xs text-muted-foreground mb-1">
-                Condition
+                {t("dialog.condition")}
               </div>
               <Input
-                placeholder="e.g. error_rate > 5%"
+                placeholder={t("dialog.conditionPlaceholder")}
                 className="rounded-xl"
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
                 <div className="text-xs text-muted-foreground mb-1">
-                  Severity
+                  {t("dialog.severity")}
                 </div>
-                <Select defaultValue="Medium">
+                <Select defaultValue="medium">
                   <SelectTrigger className="w-full rounded-xl">
-                    <SelectValue placeholder="Select" />
+                    <SelectValue placeholder={tCommon("select")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Low">Low</SelectItem>
-                    <SelectItem value="Medium">Medium</SelectItem>
-                    <SelectItem value="High">High</SelectItem>
+                    {SEVERITIES.map((severity) => (
+                      <SelectItem key={severity} value={severity}>
+                        {t(`severity.${severity}`)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <div className="text-xs text-muted-foreground mb-1">
-                  Notification Channel
+                  {t("dialog.channel")}
                 </div>
                 <Select defaultValue="Slack">
                   <SelectTrigger className="w-full rounded-xl">
-                    <SelectValue placeholder="Select" />
+                    <SelectValue placeholder={tCommon("select")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Slack">Slack</SelectItem>
@@ -205,16 +219,18 @@ export default function Page() {
               </div>
               <div>
                 <div className="text-xs text-muted-foreground mb-1">
-                  Threshold Period
+                  {t("dialog.threshold")}
                 </div>
                 <Select defaultValue="15m">
                   <SelectTrigger className="w-full rounded-xl">
-                    <SelectValue placeholder="Select" />
+                    <SelectValue placeholder={tCommon("select")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="5m">5m</SelectItem>
-                    <SelectItem value="15m">15m</SelectItem>
-                    <SelectItem value="1h">1h</SelectItem>
+                    {THRESHOLDS.map((threshold) => (
+                      <SelectItem key={threshold} value={threshold}>
+                        {thresholdLabel(threshold)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -226,13 +242,13 @@ export default function Page() {
                 className="rounded-xl"
                 onClick={() => setNewAlertOpen(false)}
               >
-                Cancel
+                {tCommon("cancel")}
               </Button>
               <Button
                 className="rounded-xl"
                 onClick={() => setNewAlertOpen(false)}
               >
-                Save Alert
+                {t("dialog.save")}
               </Button>
             </div>
           </div>
@@ -248,11 +264,11 @@ export default function Page() {
         }}
       >
         <div className="flex items-center gap-6">
-          <span className="text-muted-foreground">Active</span>
+          <span className="text-muted-foreground">{t("footer.active")}</span>
           <span className="font-medium">0</span>
-          <span className="text-muted-foreground">Muted</span>
+          <span className="text-muted-foreground">{t("footer.muted")}</span>
           <span className="font-medium">0</span>
-          <span className="text-muted-foreground">Resolved</span>
+          <span className="text-muted-foreground">{t("footer.resolved")}</span>
           <span className="font-medium">0</span>
         </div>
       </div>

@@ -1,0 +1,412 @@
+{
+  "Metadata": {
+    "title": "PulseFront",
+    "description": "一分钟内即可投入生产的日志平台。"
+  },
+  "Common": {
+    "brand": "PulseFront",
+    "live": "实时",
+    "noData": "暂无足够数据！",
+    "loading": "加载中…",
+    "cancel": "取消",
+    "save": "保存",
+    "select": "请选择",
+    "localeSwitcher": {
+      "label": "切换语言",
+      "zh": "中文",
+      "en": "English"
+    }
+  },
+  "Nav": {
+    "section": "主菜单",
+    "devConsole": "开发者控制台",
+    "plan": {
+      "free": "免费版",
+      "starter": "入门版",
+      "pro": "专业版"
+    },
+    "items": {
+      "overview": "概览",
+      "liveLogs": "实时日志",
+      "queries": "查询",
+      "alerts": "告警",
+      "integrations": "集成",
+      "apiKeys": "API 密钥",
+      "settings": "设置"
+    }
+  },
+  "TopBar": {
+    "searchPlaceholder": "搜索日志或查询…"
+  },
+  "Levels": {
+    "all": "全部",
+    "info": "信息",
+    "warning": "警告",
+    "error": "错误",
+    "debug": "调试",
+    "success": "成功",
+    "audit": "审计",
+    "metric": "指标"
+  },
+  "Overview": {
+    "title": "概览",
+    "description": "日志与告警的整体指标和活动情况。",
+    "metrics": {
+      "logs24h": "日志（24 小时）",
+      "errorRate": "错误率",
+      "ingestRate": "写入速率",
+      "activeAlerts": "活跃告警",
+      "avgLatency": "平均延迟",
+      "queueBacklog": "队列积压",
+      "jobs": "{count} 个任务"
+    },
+    "charts": {
+      "logsOverTime": "日志趋势（12 小时）",
+      "errorTrend": "错误趋势（12 小时）",
+      "topSources": "主要来源（24 小时）"
+    },
+    "topActivity": "主要活动（24 小时）",
+    "table": {
+      "time": "时间",
+      "source": "来源",
+      "action": "操作",
+      "status": "状态"
+    },
+    "status": {
+      "ok": "正常",
+      "warn": "警告",
+      "error": "错误"
+    },
+    "systemHealth": "系统健康",
+    "recentAlerts": "最近告警",
+    "services": {
+      "ingest": "写入服务",
+      "alerting": "告警服务",
+      "database": "数据库",
+      "publicApi": "公共 API"
+    },
+    "healthStatus": {
+      "healthy": "健康",
+      "degraded": "降级",
+      "down": "故障"
+    }
+  },
+  "LiveLogs": {
+    "title": "日志尾随",
+    "description": "每秒实时查看新增的日志行。",
+    "category": "类别",
+    "categoryPlaceholder": "选择类别",
+    "search": "搜索",
+    "searchPlaceholder": "搜索日志（例如 message: timeout）",
+    "liveTail": "实时尾随 · {count} 条",
+    "updatesEverySecond": "每秒刷新一次",
+    "empty": "静态尾随中没有匹配的日志。",
+    "details": "日志详情",
+    "copyJson": "复制 JSON",
+    "formatted": "格式化",
+    "rawJson": "原始 JSON",
+    "timestamp": "时间戳",
+    "level": "级别",
+    "source": "来源",
+    "message": "消息",
+    "payload": "载荷",
+    "logsLoaded": "已加载日志",
+    "errors": "错误",
+    "warnings": "警告"
+  },
+  "Queries": {
+    "title": "查询",
+    "description": "搜索、筛选并分析项目中存储的日志。",
+    "placeholder": "输入查询（例如 type:error AND appName:billing）",
+    "run": "运行查询",
+    "clear": "清除",
+    "examples": "示例：",
+    "results": "查询结果",
+    "rows": "{count} 行",
+    "loadFailed": "加载日志失败：{error}",
+    "empty": "未找到日志，请尝试调整查询条件。",
+    "table": {
+      "timestamp": "时间戳",
+      "type": "类型",
+      "app": "应用",
+      "message": "消息",
+      "environment": "环境"
+    },
+    "details": "日志详情",
+    "copyJson": "复制 JSON",
+    "formatted": "格式化",
+    "rawJson": "原始 JSON",
+    "app": "应用",
+    "environment": "环境",
+    "footer": {
+      "results": "结果",
+      "errors": "错误",
+      "warnings": "警告",
+      "loading": "加载中…"
+    }
+  },
+  "Alerts": {
+    "title": "告警",
+    "description": "监控并管理基于日志的活跃告警。",
+    "newAlert": "新建告警",
+    "comingSoon": "告警创建功能将在 v2 版本中提供",
+    "emptyTitle": "尚未配置告警",
+    "emptyDescription": "你还没有创建任何告警。配置告警后，系统会在出现关键事件时通知你。",
+    "table": {
+      "name": "名称",
+      "condition": "条件",
+      "status": "状态",
+      "severity": "严重级别",
+      "lastTriggered": "最近触发"
+    },
+    "status": {
+      "active": "活跃",
+      "resolved": "已恢复"
+    },
+    "severity": {
+      "high": "高",
+      "medium": "中",
+      "low": "低"
+    },
+    "dialog": {
+      "title": "新建告警",
+      "description": "配置一个新告警，当条件命中时将触发。",
+      "name": "告警名称",
+      "namePlaceholder": "输入告警名称",
+      "condition": "条件",
+      "conditionPlaceholder": "例如 error_rate > 5%",
+      "severity": "严重级别",
+      "channel": "通知渠道",
+      "threshold": "阈值周期",
+      "save": "保存告警",
+      "minutes": "{count} 分钟",
+      "hour": "1 小时"
+    },
+    "footer": {
+      "active": "活跃",
+      "muted": "已静音",
+      "resolved": "已恢复"
+    }
+  },
+  "Integrations": {
+    "title": "集成",
+    "description": "将 PulseFront 接入你常用的框架",
+    "comingSoon": "即将推出",
+    "frameworks": {
+      "nextjs": "面向生产环境的 React 框架",
+      "express": "快速、无预设的 Web 框架",
+      "nestjs": "渐进式 Node.js 框架",
+      "remix": "全栈 Web 框架",
+      "django": "Python Web 框架",
+      "flask": "轻量级 Python 框架"
+    }
+  },
+  "ApiKeys": {
+    "title": "API 密钥",
+    "description": "管理和保护项目的访问凭证。",
+    "generate": "生成新密钥",
+    "tooltip": {
+      "limit": "已达上限：每位用户最多 5 个活跃密钥",
+      "create": "创建一个新的 API 密钥"
+    },
+    "securityTitle": "API 密钥安全",
+    "securityDescription": "API 密钥属于敏感凭证，请像对待密码一样妥善保管：不要公开分享，也不要提交到版本控制中。每个密钥在项目内唯一，一旦泄露可立即吊销。为保障安全，密钥仅在创建时展示一次。",
+    "yourKeys": "你的 API 密钥",
+    "keyCount": "{count} 个密钥",
+    "loadingKeys": "正在加载已保存的 API 密钥…",
+    "noKeys": "尚未创建 API 密钥。生成一个即可开始使用 PulseFront API。",
+    "refreshing": "正在刷新密钥…",
+    "table": {
+      "name": "名称",
+      "scope": "权限范围",
+      "created": "创建时间",
+      "lastUsed": "最近使用",
+      "status": "状态",
+      "actions": "操作"
+    },
+    "scope": {
+      "fullAccess": "完全访问",
+      "readOnly": "只读",
+      "writeOnly": "只写"
+    },
+    "status": {
+      "active": "活跃",
+      "revoked": "已吊销"
+    },
+    "revoke": "吊销",
+    "detail": {
+      "title": "API 密钥详情",
+      "cannotDeleteDefault": "无法删除系统生成的默认 API 密钥",
+      "cannotRevokeLast": "无法吊销唯一活跃的 API 密钥",
+      "revokeThis": "吊销此 API 密钥"
+    },
+    "toast": {
+      "cannotDeleteDefault": "无法删除系统生成的默认 API 密钥",
+      "cannotRevokeLast": "无法吊销唯一活跃的 API 密钥"
+    },
+    "generateDialog": {
+      "title": "生成新 API 密钥",
+      "description": "创建一个带权限范围的新 API 密钥。该密钥仅展示一次。",
+      "limitMessage": "你已达到 5 个活跃密钥的上限，请先吊销一个密钥再创建新密钥。",
+      "keyName": "密钥名称",
+      "keyNamePlaceholder": "输入密钥名称",
+      "scope": "权限范围",
+      "expiry": "有效期",
+      "never": "永不过期",
+      "days": "{count} 天",
+      "creating": "创建中…",
+      "create": "创建密钥"
+    },
+    "revealDialog": {
+      "title": "你的新 API 密钥",
+      "description": "该密钥仅展示一次，请复制并妥善保存。",
+      "secret": "密钥",
+      "copied": "已复制",
+      "copy": "复制",
+      "copiedTooltip": "已复制！",
+      "warning": "出于安全考虑，我们无法再次展示或找回此密钥。",
+      "confirm": "我已安全保存"
+    },
+    "footer": {
+      "activeKeys": "活跃密钥",
+      "revoked": "已吊销",
+      "lastGenerated": "最近生成"
+    },
+    "timeAgo": {
+      "justNow": "刚刚",
+      "minutes": "{count} 分钟前",
+      "hours": "{count} 小时前",
+      "days": "{count} 天前"
+    }
+  },
+  "Settings": {
+    "title": "设置",
+    "description": "管理账单、项目配置和账户偏好。",
+    "tabs": {
+      "billing": "账单与套餐",
+      "project": "项目设置",
+      "account": "账户与安全",
+      "danger": "危险操作"
+    },
+    "billing": {
+      "title": "账单与套餐",
+      "description": "安全管理你的订阅和用量。所有支付均通过 Stripe 处理。",
+      "currentPlan": "当前套餐",
+      "active": "使用中",
+      "changePlan": "更改套餐",
+      "selectPlan": "选择套餐",
+      "usage": "用量",
+      "nextInvoice": "下次账单",
+      "notApplicable": "不适用",
+      "currentPlanButton": "当前套餐",
+      "upgradePlan": "升级套餐",
+      "invoices": "账单记录",
+      "invoiceCount": "{count} 张账单",
+      "exportCsv": "导出 CSV",
+      "table": {
+        "invoiceId": "账单编号",
+        "date": "日期",
+        "amount": "金额",
+        "status": "状态",
+        "actions": "操作"
+      },
+      "downloadPdf": "下载 PDF",
+      "noInvoices": "暂无账单记录！"
+    },
+    "plans": {
+      "free": {
+        "name": "免费版",
+        "price": "$0",
+        "logsLimit": "每月 1 万条日志",
+        "features": {
+          "logs": "每月 1 万条日志",
+          "retention": "保留 7 天",
+          "search": "高级搜索",
+          "emailSupport": "邮件支持",
+          "apiAccess": "API 访问"
+        }
+      },
+      "starter": {
+        "name": "入门版",
+        "price": "$9.99",
+        "logsLimit": "每月 10 万条日志",
+        "features": {
+          "logs": "每月 10 万条日志",
+          "retention": "保留 30 天",
+          "search": "高级搜索",
+          "prioritySupport": "优先支持",
+          "apiAccess": "API 访问"
+        }
+      },
+      "pro": {
+        "name": "专业版",
+        "price": "$19.99",
+        "logsLimit": "每月 100 万条日志",
+        "features": {
+          "logs": "每月 100 万条日志",
+          "retention": "保留 90 天",
+          "alerts": "实时告警",
+          "support": "7×24 支持",
+          "apiAccess": "API 访问"
+        }
+      },
+      "enterprise": {
+        "name": "企业版",
+        "price": "定制",
+        "logsLimit": "无限日志",
+        "features": {
+          "logs": "无限日志",
+          "retention": "自定义保留期",
+          "support": "专属支持",
+          "sla": "SLA 保障",
+          "security": "高级安全",
+          "onPremise": "支持私有部署"
+        }
+      }
+    },
+    "project": {
+      "title": "项目设置",
+      "description": "查看你的项目配置详情。",
+      "name": "项目名称",
+      "nameHint": "你的项目名称",
+      "nameValue": "默认项目",
+      "region": "区域",
+      "regionHint": "数据中心位置",
+      "regionValue": "US-East-1",
+      "regionDetail": "弗吉尼亚北部",
+      "timezone": "时区",
+      "timezoneHint": "用于日志时间戳",
+      "timezoneValue": "EST (UTC-5)",
+      "timezoneDetail": "美国东部标准时间"
+    },
+    "account": {
+      "title": "账户与安全",
+      "description": "查看你的账户信息和当前订阅。",
+      "name": "姓名",
+      "nameHint": "你的账户名称",
+      "email": "邮箱",
+      "emailHint": "你的账户邮箱地址",
+      "joined": "注册时间",
+      "joinedHint": "账户创建日期",
+      "plan": "套餐",
+      "planHint": "当前订阅等级",
+      "notSet": "未设置",
+      "notAvailable": "暂无"
+    },
+    "danger": {
+      "title": "危险操作",
+      "description": "删除账户不可撤销。所有数据、日志和 API 密钥将在 14 天后被永久删除。",
+      "deleteAccount": "删除账户",
+      "dialog": {
+        "title": "删除账户",
+        "description": "此操作不可撤销。你的账户删除请求将按以下流程处理：",
+        "holdTitle": "14 天安全保留期",
+        "holdDescription": "你的账户将立即被标记为待删除且无法访问。但出于安全考虑，所有数据将保留 14 天。",
+        "purgeTitle": "数据彻底删除",
+        "purgeDescription": "14 天后，所有账户数据、日志、API 密钥及相关信息将从我们的系统中永久删除。",
+        "changeMind": "如果你在 14 天内改变主意，请联系支持团队恢复账户。",
+        "confirm": "删除我的账户"
+      }
+    }
+  }
+}

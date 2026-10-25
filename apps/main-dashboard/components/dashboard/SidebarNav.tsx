@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   SidebarProvider,
   Sidebar,
@@ -31,19 +30,22 @@ import {
 import Logo from "../common/logo";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
+import { Link, usePathname } from "@/i18n/navigation";
 
 export function DashboardSidebar({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("Nav");
+  const tCommon = useTranslations("Common");
   const pathname = usePathname();
   const { user, isLoaded } = useUser();
 
   const items = [
-    { label: "Overview", href: "/", Icon: Home },
-    { label: "Live Logs", href: "/live-logs", Icon: Activity },
-    { label: "Queries", href: "/queries", Icon: SearchIcon },
-    { label: "Alerts", href: "/alerts", Icon: Bell },
-    { label: "Integrations", href: "/integrations", Icon: Plug },
-    { label: "API Keys", href: "/api-keys", Icon: Key },
-    { label: "Settings", href: "/settings", Icon: SettingsIcon },
+    { label: t("items.overview"), href: "/", Icon: Home },
+    { label: t("items.liveLogs"), href: "/live-logs", Icon: Activity },
+    { label: t("items.queries"), href: "/queries", Icon: SearchIcon },
+    { label: t("items.alerts"), href: "/alerts", Icon: Bell },
+    { label: t("items.integrations"), href: "/integrations", Icon: Plug },
+    { label: t("items.apiKeys"), href: "/api-keys", Icon: Key },
+    { label: t("items.settings"), href: "/settings", Icon: SettingsIcon },
   ];
 
   return (
@@ -72,7 +74,7 @@ export function DashboardSidebar({ children }: { children: React.ReactNode }) {
               <Logo textClassName="text-xl" className="h-7 w-7" />
             </Link>
             <span className="px-4 -mt-2 text-sm text-white/70">
-              Developer Console
+              {t("devConsole")}
             </span>
           </div>
           <Link
@@ -88,7 +90,7 @@ export function DashboardSidebar({ children }: { children: React.ReactNode }) {
         <SidebarContent>
           <SidebarGroup>
             <div className="px-4 pt-1 pb-1 text-[11px] uppercase tracking-wider text-[#71717A] group-data-[collapsible=icon]:hidden">
-              Main
+              {t("section")}
             </div>
             <SidebarGroupContent>
               <SidebarMenu className="gap-4 px-3">
@@ -148,9 +150,9 @@ export function DashboardSidebar({ children }: { children: React.ReactNode }) {
 
               return (
                 <span
-                  className={`absolute -top-3 left-2 z-10 text-[11px] font-semibold capitalize px-2 py-0.5 rounded-lg ${style}`}
+                  className={`absolute -top-3 left-2 z-10 text-[11px] font-semibold px-2 py-0.5 rounded-lg ${style}`}
                 >
-                  free
+                  {t(`plan.${plan}`)}
                 </span>
               );
             })()}
@@ -162,7 +164,7 @@ export function DashboardSidebar({ children }: { children: React.ReactNode }) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-medium truncate text-[#A1A1AA]">
-                      Loading...
+                      {tCommon("loading")}
                     </div>
                   </div>
                   <Button size="icon" variant="ghost" className="h-8 w-8">

@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -129,6 +130,8 @@ const STATIC_QUERY_RESULTS: ResultRow[] = [
 ];
 
 export default function Page() {
+  const t = useTranslations("Queries");
+  const locale = useLocale();
   const [filters, setFilters] = React.useState<{
     limit?: number;
     query?: string; // kept for compatibility, but we’ll send explicit keys
@@ -256,17 +259,15 @@ export default function Page() {
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Queries</h1>
-        <p className="text-sm text-muted-foreground">
-          Search, filter, and analyze logs stored in your project.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("description")}</p>
       </div>
 
       {/* Query Bar */}
       <div className="rounded-xl border p-3">
         <div className="flex gap-3">
           <Input
-            placeholder="Enter query (e.g. type:error AND appName:billing)"
+            placeholder={t("placeholder")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
@@ -276,7 +277,7 @@ export default function Page() {
           />
           <Button onClick={runQuery} className="rounded-xl">
             <Play className="h-4 w-4" />
-            Run Query
+            {t("run")}
           </Button>
           <Button
             variant="ghost"
@@ -284,12 +285,12 @@ export default function Page() {
             className="rounded-xl hover:bg-white/[0.02]"
           >
             <XCircle className="h-4 w-4" />
-            Clear
+            {t("clear")}
           </Button>
         </div>
         <div className="mt-2 flex items-center gap-2">
           <Search className="h-4 w-4 opacity-60" />
-          <div className="text-xs text-muted-foreground">Examples:</div>
+          <div className="text-xs text-muted-foreground">{t("examples")}</div>
           <div className="flex flex-wrap gap-2">
             {examples.map((ex) => (
               <button
@@ -307,10 +308,10 @@ export default function Page() {
       {/* Results Table */}
       <div className="rounded-xl border">
         <div className="flex items-center justify-between px-3 py-2">
-          <h3 className="text-sm font-medium">Query Results</h3>
+          <h3 className="text-sm font-medium">{t("results")}</h3>
           <span className="text-xs text-muted-foreground flex items-center gap-2">
             {isLoading && <Loader2 className="h-3 w-3 animate-spin" />}
-            {stats.total} rows
+            {t("rows", { count: stats.total })}
           </span>
         </div>
         <div
@@ -321,22 +322,22 @@ export default function Page() {
         >
           {error ? (
             <div className="flex items-center justify-center py-12 text-red-400">
-              Failed to load logs: {String(error)}
+              {t("loadFailed", { error: String(error) })}
             </div>
           ) : results.length === 0 ? (
             <div className="flex items-center justify-center py-12 text-muted-foreground">
               <Search className="mr-2 h-4 w-4" />
-              No logs found. Try adjusting your query.
+              {t("empty")}
             </div>
           ) : (
             <Table className="min-w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead>Timestamp</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>App</TableHead>
-                  <TableHead>Message</TableHead>
-                  <TableHead>Environment</TableHead>
+                  <TableHead>{t("table.timestamp")}</TableHead>
+                  <TableHead>{t("table.type")}</TableHead>
+                  <TableHead>{t("table.app")}</TableHead>
+                  <TableHead>{t("table.message")}</TableHead>
+                  <TableHead>{t("table.environment")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -391,7 +392,7 @@ export default function Page() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium">Log Details</h3>
+              <h3 className="text-sm font-medium">{t("details")}</h3>
               <Button
                 variant="outline"
                 size="sm"
@@ -403,23 +404,27 @@ export default function Page() {
                 }
               >
                 <Clipboard className="mr-2 h-3.5 w-3.5" />
-                Copy JSON
+                {t("copyJson")}
               </Button>
             </div>
 
             <Tabs defaultValue="formatted" className="mt-3">
               <TabsList>
-                <TabsTrigger value="formatted">Formatted</TabsTrigger>
-                <TabsTrigger value="raw">Raw JSON</TabsTrigger>
+                <TabsTrigger value="formatted">{t("formatted")}</TabsTrigger>
+                <TabsTrigger value="raw">{t("rawJson")}</TabsTrigger>
               </TabsList>
               <TabsContent value="formatted" className="mt-3">
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Timestamp</span>
+                    <span className="text-muted-foreground">
+                      {t("table.timestamp")}
+                    </span>
                     <span>{selected.timestamp ?? "—"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Type</span>
+                    <span className="text-muted-foreground">
+                      {t("table.type")}
+                    </span>
                     <span
                       className="font-medium"
                       style={{
@@ -435,18 +440,20 @@ export default function Page() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">App</span>
+                    <span className="text-muted-foreground">{t("app")}</span>
                     <span>{selected.appName ?? "—"}</span>
                   </div>
                   <div>
-                    <div className="text-muted-foreground mb-1">Message</div>
+                    <div className="text-muted-foreground mb-1">
+                      {t("table.message")}
+                    </div>
                     <div className="rounded-lg border border-white/10 bg-black/20 p-2">
                       {selected.message ?? "—"}
                     </div>
                   </div>
                   <div>
                     <div className="text-muted-foreground mb-1">
-                      Environment
+                      {t("environment")}
                     </div>
                     <div className="rounded-lg border border-white/10 bg-black/20 p-2">
                       {selected.environment ?? "—"}
@@ -473,15 +480,23 @@ export default function Page() {
         }}
       >
         <div className="flex items-center gap-6">
-          <span className="text-muted-foreground">Results</span>
-          <span className="font-medium">{stats.total.toLocaleString()}</span>
-          <span className="text-muted-foreground">Errors</span>
-          <span className="font-medium">{stats.errors.toLocaleString()}</span>
-          <span className="text-muted-foreground">Warnings</span>
-          <span className="font-medium">{stats.warnings.toLocaleString()}</span>
+          <span className="text-muted-foreground">
+            {t("footer.results")}
+          </span>
+          <span className="font-medium">
+            {stats.total.toLocaleString(locale)}
+          </span>
+          <span className="text-muted-foreground">{t("footer.errors")}</span>
+          <span className="font-medium">
+            {stats.errors.toLocaleString(locale)}
+          </span>
+          <span className="text-muted-foreground">{t("footer.warnings")}</span>
+          <span className="font-medium">
+            {stats.warnings.toLocaleString(locale)}
+          </span>
         </div>
         <div className="text-muted-foreground">
-          {isLoading ? "Loading…" : ""}
+          {isLoading ? t("footer.loading") : ""}
         </div>
       </div>
     </div>
