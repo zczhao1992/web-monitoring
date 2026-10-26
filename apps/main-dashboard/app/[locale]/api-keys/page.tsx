@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-
 import {
   Table,
   TableHeader,
@@ -20,60 +19,56 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Plus, Lock, Key, Clipboard, Trash2, Loader2 } from "lucide-react";
-import { getToken, useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { format } from "timeago.js";
+import { getToken, useUser } from "@clerk/nextjs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-type KeyScope = "Full Access" | "Read Only" | "Write Only";
-type KeyStatus = "Active" | "Revoked";
-
-type KeyRow = {
+/** 服务端返回的 API 密钥原始数据（字段与后端保持一致） */
+type ApiKeyItem = {
   id: string;
-  name: string;
-  scope: KeyScope;
-  created: string;
-  lastUsed: string;
-  status: KeyStatus;
+  prefix: string;
+  name?: string | null;
+  created_at: string;
+  last_used_at: string | null;
+  revoked_at: string | null;
 };
 
-const statusColors: Record<KeyStatus, string> = {
+/** 每个用户最多可拥有的活跃密钥数量 */
+const ACTIVE_KEY_LIMIT = 5;
+
+const statusColors: any = {
   Active: "#00C2A8",
   Revoked: "#6B7280",
 };
 
-const SCOPES: KeyScope[] = ["Full Access", "Read Only", "Write Only"];
-type Expiry = "Never" | "30 Days" | "90 Days";
-const EXPIRIES: Expiry[] = ["Never", "30 Days", "90 Days"];
-
 export default function Page() {
   const t = useTranslations("ApiKeys");
-  const tCommon = useTranslations("Common");
-
-  // Remove hardcoded seed; load from API instead
-  const [keys, setKeys] = React.useState<KeyRow[]>([]);
-  const [selected, setSelected] = React.useState<KeyRow | null>(null);
-
+  const locale = useLocale();
+  // 详情抽屉当前展示的密钥，null 表示抽屉关闭
+  const [selected, setSelected] = React.useState<ApiKeyItem | null>(null);
   const [revealOpen, setRevealOpen] = React.useState(false);
+  // 新建密钥仅在创建时返回一次完整密钥，关闭弹窗后清空
   const [generatedSecret, setGeneratedSecret] = React.useState<string | null>(
     null
   );
-
-  // New: creation loading state
+  // 创建 / 吊销请求的加载状态
   const [isCreating, setIsCreating] = React.useState(false);
-  // New: loading state for fetching saved API keys
-  const [isLoadingKeys, setIsLoadingKeys] = React.useState(true);
-  // New: copied feedback state
+  const [isRevoking, setIsRevoking] = React.useState(false);
+  // 复制按钮的短暂成功反馈
   const [copied, setCopied] = React.useState(false);
-  const { isLoaded, isSignedIn } = useUser();
 
+  const { isLoaded, isSignedIn } = useUser();
   const queryClient = useQueryClient();
+
+  // 拉取当前用户的 API 密钥列表，登录态就绪后才发起请求
   const {
-    data: apiKeysData = [],
+    data: apiKeys = [],
     isLoading,
     isError,
   } = useQuery({
@@ -88,21 +83,20 @@ export default function Page() {
           },
         }
       );
-      const res = await response.json();
+      const res = await response.json().catch(() => null);
       if (!response.ok) {
         throw new Error(
           typeof res?.message === "string"
             ? res.message
-            : "Unable to load API keys"
+            : t("errors.loadFailed")
         );
       }
-      return Array.isArray(res) ? res : [];
+      return Array.isArray(res) ? (res as ApiKeyItem[]) : [];
     },
     enabled: isLoaded && isSignedIn,
   });
 
-  const apiKeys = Array.isArray(apiKeysData) ? apiKeysData : [];
-
+  // 创建新密钥，成功后刷新列表并弹出一次性密钥展示框
   const createKey = async () => {
     setIsCreating(true);
     try {
@@ -115,42 +109,53 @@ export default function Page() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({}),
         }
       );
-      if (!res.ok) return;
-      const { key } = await res.json();
-      setGeneratedSecret(key);
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        toast.error(data?.message ?? t("errors.createFailed"));
+        return;
+      }
+      setGeneratedSecret(data?.key ?? null);
       setRevealOpen(true);
+      queryClient.invalidateQueries({ queryKey: ["api-keys"] });
+    } catch {
+      toast.error(t("errors.createFailed"));
     } finally {
       setIsCreating(false);
     }
   };
 
-  const revokeSelected = async () => {
-    if (!selected) return;
-
-    // Prevent revoking the system-generated "Default" key
-    if (selected.name === "Default") {
-      toast.error(t("toast.cannotDeleteDefault"));
-      return;
+  // 吊销指定密钥，成功后刷新列表并关闭详情抽屉
+  const revokeKey = async (keyId: string) => {
+    setIsRevoking(true);
+    try {
+      const token = await getToken();
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/api-keys/${keyId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!res.ok) {
+        const error = await res.json().catch(() => null);
+        toast.error(error?.message ?? t("errors.revokeFailed"));
+        return;
+      }
+      queryClient.invalidateQueries({ queryKey: ["api-keys"] });
+      setSelected(null);
+    } catch {
+      toast.error(t("errors.revokeFailed"));
+    } finally {
+      setIsRevoking(false);
     }
-
-    // Prevent revoking the last active key
-    if (activeCount <= 1 && selected.status === "Active") {
-      toast.error(t("toast.cannotRevokeLast"));
-      return;
-    }
-
-    await fetch("/api/api-keys/revoke", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: selected.id }),
-    });
-
-    setSelected((sel) => (sel ? { ...sel, status: "Revoked" } : sel));
   };
 
+  // 复制一次性密钥，并在 1.5s 后恢复按钮文案
   const copyGeneratedSecret = () => {
     if (!generatedSecret) return;
     navigator.clipboard.writeText(generatedSecret);
@@ -159,20 +164,23 @@ export default function Page() {
   };
 
   const activeCount = React.useMemo(
-    () => keys.filter((k) => k.status === "Active").length,
-    [keys]
+    () => apiKeys.filter((k) => k.revoked_at === null).length,
+    [apiKeys]
   );
-
-  const limitReached = activeCount >= 5;
 
   const revokedCount = React.useMemo(
-    () => keys.filter((k) => k.status === "Revoked").length,
-    [keys]
+    () => apiKeys.filter((k) => k.revoked_at !== null).length,
+    [apiKeys]
   );
+
+  // 活跃密钥达到上限后禁止继续创建
+  const limitReached = activeCount >= ACTIVE_KEY_LIMIT;
+
+  // 最近一次生成密钥的相对时间（如 '3 小时前'）
   const lastGeneratedAgo = React.useMemo(() => {
-    const timestamps = keys
-      .map((k) => Date.parse(k.created))
-      .filter((time) => !Number.isNaN(time));
+    const timestamps = apiKeys
+      .map((k: any) => Date.parse(k.created_at))
+      .filter((t: any) => !Number.isNaN(t));
     if (timestamps.length === 0) return "—";
     const latest = Math.max(...timestamps);
     const diffMs = Date.now() - latest;
@@ -184,25 +192,30 @@ export default function Page() {
     if (hours >= 1) return t("timeAgo.hours", { count: hours });
     if (mins >= 1) return t("timeAgo.minutes", { count: mins });
     return t("timeAgo.justNow");
-  }, [keys, t]);
+  }, [apiKeys, t]);
 
-  const scopeLabel = (scope: KeyScope) => {
-    const keys: Record<KeyScope, "fullAccess" | "readOnly" | "writeOnly"> = {
-      "Full Access": "fullAccess",
-      "Read Only": "readOnly",
-      "Write Only": "writeOnly",
-    };
-    return t(`scope.${keys[scope]}`);
-  };
+  // 首次加载中
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12 text-muted-foreground">
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        {t("loadingKeys")}
+      </div>
+    );
+  }
 
-  const expiryLabel = (expiry: Expiry) => {
-    if (expiry === "Never") return t("generateDialog.never");
-    return t("generateDialog.days", { count: Number.parseInt(expiry, 10) });
-  };
+  // 加载失败
+  if (isError) {
+    return (
+      <div className="rounded-md border p-6 text-sm text-muted-foreground">
+        {t("errors.loadFailed")}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
-      {/* Header */}
+      {/* 页头：标题 + 生成密钥按钮 */}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
@@ -210,14 +223,13 @@ export default function Page() {
           </h1>
           <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
-        {/* Disable generate button at limit; show tooltip */}
         <span className="inline-flex">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 className="rounded-md"
-                onClick={() => createKey()}
-                disabled={limitReached}
+                onClick={createKey}
+                disabled={isCreating || limitReached}
               >
                 <Plus className="h-4 w-4" />
                 {t("generate")}
@@ -230,7 +242,7 @@ export default function Page() {
         </span>
       </div>
 
-      {/* Info Card */}
+      {/* 安全提示卡片 */}
       <div
         className="rounded-md border"
         style={{
@@ -251,33 +263,26 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Keys Table */}
+      {/* 密钥列表 */}
       <div className="rounded-md border">
-        {keys.length > 0 && (
+        {apiKeys.length > 0 && (
           <div className="flex items-center justify-between px-3 py-2">
             <h3 className="text-sm font-medium">{t("yourKeys")}</h3>
             <span className="text-xs text-muted-foreground">
-              {t("keyCount", { count: keys.length })}
+              {t("keyCount", { count: apiKeys.length })}
             </span>
           </div>
         )}
 
-        {keys.length === 0 ? (
-          isLoadingKeys ? (
-            <div className="flex items-center justify-center py-12 text-muted-foreground">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {t("loadingKeys")}
-            </div>
-          ) : (
-            <div className="flex items-center justify-center py-12 text-muted-foreground">
-              <Key className="mr-2 h-4 w-4" />
-              {t("noKeys")}
-            </div>
-          )
+        {apiKeys.length === 0 ? (
+          <div className="flex items-center justify-center py-12 text-muted-foreground">
+            <Key className="mr-2 h-4 w-4" />
+            {t("noKeys")}
+          </div>
         ) : (
           <div className="relative">
-            {/* Overlay spinner while refreshing keys list */}
-            {isLoadingKeys && (
+            {/* 后台刷新时的半透明遮罩 */}
+            {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-sm">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -290,7 +295,6 @@ export default function Page() {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("table.name")}</TableHead>
-                  <TableHead>{t("table.scope")}</TableHead>
                   <TableHead>{t("table.created")}</TableHead>
                   <TableHead>{t("table.lastUsed")}</TableHead>
                   <TableHead>{t("table.status")}</TableHead>
@@ -298,78 +302,78 @@ export default function Page() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {keys.map((k, idx) => (
-                  <TableRow
-                    key={`${k.name}-${idx}`}
-                    className="cursor-pointer transition-colors hover:bg-white/5"
-                    onClick={() => setSelected(k)}
-                  >
-                    <TableCell className="text-white/90">{k.name}</TableCell>
-                    <TableCell className="text-white/80">
-                      {scopeLabel(k.scope)}
-                    </TableCell>
-                    <TableCell className="text-white/70">{k.created}</TableCell>
-                    <TableCell className="text-white/70">
-                      {k.lastUsed}
-                    </TableCell>
-                    <TableCell
-                      className="font-medium"
-                      style={{ color: statusColors[k.status] }}
+                {apiKeys.map((item) => {
+                  const isActive = item.revoked_at === null;
+
+                  return (
+                    <TableRow
+                      key={item.id}
+                      className="cursor-pointer transition-colors hover:bg-white/5"
+                      onClick={() => setSelected(item)}
                     >
-                      {t(
-                        `status.${k.status === "Active" ? "active" : "revoked"}`
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        {k.status !== "Revoked" && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="inline-flex">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="rounded-lg"
-                                  disabled={
-                                    activeCount <= 1 && k.status === "Active"
-                                  }
-                                  onClick={async (e) => {
-                                    e.stopPropagation();
-                                    if (k.name === "Default") {
-                                      toast.error(
-                                        t("toast.cannotDeleteDefault")
-                                      );
-                                      return;
-                                    }
-                                    if (
-                                      activeCount <= 1 &&
-                                      k.status === "Active"
-                                    ) {
-                                      toast.error(t("toast.cannotRevokeLast"));
-                                      return;
-                                    }
-                                    setSelected(k);
-                                    await revokeSelected();
-                                  }}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                  {t("revoke")}
-                                </Button>
-                              </span>
-                            </TooltipTrigger>
-                          </Tooltip>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      <TableCell className="text-white/90">
+                        {item.prefix}
+                      </TableCell>
+                      <TableCell className="text-white/70">
+                        {format(item.created_at) ?? "—"}
+                      </TableCell>
+                      <TableCell className="text-white/70">
+                        {item.last_used_at ?? t("notUsedYet")}
+                      </TableCell>
+                      <TableCell
+                        className="font-medium"
+                        style={{
+                          color: statusColors[isActive ? "Active" : "Revoked"],
+                        }}
+                      >
+                        {isActive ? t("status.active") : t("status.revoked")}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          {isActive && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="inline-flex">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="rounded-lg"
+                                    disabled={isRevoking || activeCount <= 1}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (activeCount <= 1) {
+                                        toast.error(
+                                          t("toast.cannotRevokeLast")
+                                        );
+                                        return;
+                                      }
+                                      revokeKey(item.id);
+                                    }}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                    {t("revoke")}
+                                  </Button>
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent sideOffset={6}>
+                                {activeCount <= 1
+                                  ? t("detail.cannotRevokeLast")
+                                  : t("detail.revokeThis")}
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
         )}
       </div>
 
-      {/* Key Detail Drawer (right side) */}
+      {/* 密钥详情抽屉 */}
       {selected && (
         <div
           className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
@@ -386,7 +390,7 @@ export default function Page() {
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium">{t("detail.title")}</h3>
               <div className="flex gap-2">
-                {selected.status !== "Revoked" && (
+                {selected.revoked_at === null && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span className="inline-flex">
@@ -394,12 +398,8 @@ export default function Page() {
                           variant="outline"
                           size="sm"
                           className="rounded-md"
-                          disabled={
-                            (activeCount <= 1 &&
-                              selected.status === "Active") ||
-                            selected.name === "Default"
-                          }
-                          onClick={revokeSelected}
+                          disabled={isRevoking || activeCount <= 1}
+                          onClick={() => revokeKey(selected.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                           {t("revoke")}
@@ -407,9 +407,7 @@ export default function Page() {
                       </span>
                     </TooltipTrigger>
                     <TooltipContent sideOffset={6}>
-                      {selected.name === "Default"
-                        ? t("detail.cannotDeleteDefault")
-                        : activeCount <= 1 && selected.status === "Active"
+                      {activeCount <= 1
                         ? t("detail.cannotRevokeLast")
                         : t("detail.revokeThis")}
                     </TooltipContent>
@@ -420,37 +418,34 @@ export default function Page() {
 
             <div className="mt-3 space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("table.name")}</span>
-                <span>{selected.name}</span>
+                <span className="text-muted-foreground">
+                  {t("detail.created")}
+                </span>
+                <span>{format(selected.created_at, locale) ?? "—"}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
-                  {t("table.scope")}
+                  {t("detail.lastUsed")}
                 </span>
-                <span>{scopeLabel(selected.scope)}</span>
+                <span>
+                  {(selected.last_used_at, locale ?? t("notUsedYet"))}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
-                  {t("table.created")}
+                  {t("detail.status")}
                 </span>
-                <span>{selected.created}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">
-                  {t("table.lastUsed")}
-                </span>
-                <span>{selected.lastUsed}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">
-                  {t("table.status")}
-                </span>
-                <span style={{ color: statusColors[selected.status] }}>
-                  {t(
-                    `status.${
-                      selected.status === "Active" ? "active" : "revoked"
-                    }`
-                  )}
+                <span
+                  style={{
+                    color:
+                      statusColors[
+                        selected.revoked_at === null ? "Active" : "Revoked"
+                      ],
+                  }}
+                >
+                  {selected.revoked_at === null
+                    ? t("status.active")
+                    : t("status.revoked")}
                 </span>
               </div>
             </div>
@@ -458,7 +453,7 @@ export default function Page() {
         </div>
       )}
 
-      {/* One-time Secret Reveal Dialog */}
+      {/* 一次性密钥展示弹窗 */}
       <Dialog
         open={revealOpen}
         onOpenChange={(open: boolean) => {
@@ -526,7 +521,7 @@ export default function Page() {
         </DialogContent>
       </Dialog>
 
-      {/* Footer status bar */}
+      {/* 底部统计栏 */}
       <div
         className="flex items-center justify-between rounded-md border px-3 py-2 text-xs"
         style={{

@@ -233,12 +233,21 @@
       "active": "Active",
       "revoked": "Revoked"
     },
+    "notUsedYet": "Not used yet",
     "revoke": "Revoke",
     "detail": {
       "title": "API Key Details",
+      "created": "Created",
+      "lastUsed": "Last Used",
+      "status": "Status",
       "cannotDeleteDefault": "Cannot delete the system-generated Default API key",
       "cannotRevokeLast": "Cannot revoke the only active API key",
       "revokeThis": "Revoke this API key"
+    },
+    "errors": {
+      "loadFailed": "Unable to load your API keys",
+      "createFailed": "Unable to generate API key",
+      "revokeFailed": "Unable to revoke API key"
     },
     "toast": {
       "cannotDeleteDefault": "Cannot delete the system-generated Default API key",
