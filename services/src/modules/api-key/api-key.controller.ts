@@ -8,10 +8,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { APIKeyService } from './api-key.service';
-// import { AuthGuard } from '../../guards/auth.guard';
+import { AuthGuard } from '../../guards/auth.guard';
 
 @Controller('api-keys')
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 export class ApiKeyController {
   constructor(private readonly apiKeyService: APIKeyService) {}
   @Post()
